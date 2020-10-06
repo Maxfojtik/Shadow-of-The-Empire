@@ -3,6 +3,10 @@ var connection = new BackendConnection()
 
 const States = {
 	SLIDERS: "InSliders",
+	LOGGING_IN: "LoggingIn",
+	SEEING_PROPOSALS: "SeeingProposals",
+	VOTING_PROPOSALS: "VotingProposals",
+	ADMIN: "Admin"
 };
 
 function setState(state) {
