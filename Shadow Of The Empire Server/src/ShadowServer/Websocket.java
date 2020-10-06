@@ -26,7 +26,6 @@ class Websockets extends WebSocketServer {
 			dcedPlayer.socket = null;
 			dcedPlayer.disconnectTime = System.currentTimeMillis();
 		}
-//		AvalonServer.playerDisconnected(dcedPlayer);
 	}
 
 	@Override
