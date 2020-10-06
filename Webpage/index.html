@@ -7,7 +7,7 @@
 		<script src="helpers.js"></script>
 		<script src="index.js"></script>
 		<link rel="stylesheet" href="site.css">
-		<title>Better Avalon. Fight Me</title>
+		<title>Shadow of the Colossus</title>
 	</head>
 
 	<body>
@@ -21,132 +21,11 @@
 		<div id="error-screen" class="screen">
 			<h2>Connection Error</h2>
 			<p>There was an error connecting to the server</p>
-			<p>you should probably refresh or give up</p>
+			<p>it may be down or your connection may be having issues</p>
 		</div>
 
-		<div id="main-menu-screen" class="screen">
-			<h1 style="margin-top: 70px; margin-bottom: 70px;">Avalon</h1>
-
-			<div class="left-column">
-				<h3>Join Game</h3>
-				<label for="game_code">Game Code:</label><br>
-				<input type="text" class="fancy-input" id="input-game-code" maxlength="4"><br>
-				<button onclick="joinGame()" class="blue-button" id="join-game-button" disabled>Join Game</button>
-			</div>
-
-			<div class="right-column">
-				<h3>Make Game</h3>
-				<button onclick="createGame()" class="blue-button">Create Game</button>
-			</div>
-		</div>
-
-		<div id="lobby-screen" class="screen">
-			<h2>Avalon Game Lobby</h2>
-			<h1 id="lobby-id"></h1>
-			<p id="lobby-link">link</p>
-			<label>Your Name:</label><br>
-			<input type="text" class="fancy-input" id="input-name-lobby" maxlength="20" spellcheck="false">
-
-			<div class="left-column">
-				<h2>Players:</h2>
-				<div id="lobby-player-list">
-				</div>
-			</div>
-
-			<div class="right-column">
-				<h2>Roles:</h2>
-				<div class="role-card good-role-card">
-					<span>Minion of Arthur</span>
-					<span class="amount-adjust">
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.GOOD, -1)">-</button>
-						<span id="role-count-GoodGuy">0</span>
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.GOOD, 1)">+</button>
-					</span>
-				</div>
-
-				<div class="role-card good-role-card">
-					<span>Merlin</span>
-					<span class="amount-adjust">
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.MERLIN, -1)">-</button>
-						<span id="role-count-Merlin">0</span>
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.MERLIN, 1)">+</button>
-					</span>
-				</div>
-
-				<div class="role-card good-role-card">
-					<span>Percival</span>
-					<span class="amount-adjust">
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.PERCIVAL, -1)">-</button>
-						<span id="role-count-Percival">0</span>
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.PERCIVAL, 1)">+</button>
-					</span>
-				</div>
-
-				<div class="role-card good-role-card">
-					<span>Loyal Servant of Mordred</span>
-					<span class="amount-adjust">
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.BAD, -1)">-</button>
-						<span id="role-count-BadGuy">0</span>
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.BAD, 1)">+</button>
-					</span>
-				</div>
-
-				<div class="role-card good-role-card">
-					<span>Morgana</span>
-					<span class="amount-adjust">
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.MORGANA, -1)">-</button>
-						<span id="role-count-Morgana">0</span>
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.MORGANA, 1)">+</button>
-					</span>
-				</div>
-
-				<div class="role-card good-role-card">
-					<span>Mordred</span>
-					<span class="amount-adjust">
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.MORDRED, -1)">-</button>
-						<span id="role-count-Mordred">0</span>
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.MORDRED, 1)">+</button>
-					</span>
-				</div>
-
-				<div class="role-card good-role-card">
-					<span>Assassin</span>
-					<span class="amount-adjust">
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.ASSASSIN, -1)">-</button>
-						<span id="role-count-Assassin">0</span>
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.ASSASSIN, 1)">+</button>
-					</span>
-				</div>
-
-				<div class="role-card good-role-card">
-					<span>Oberon</span>
-					<span class="amount-adjust">
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.OBERON, -1)">-</button>
-						<span id="role-count-Oberon">0</span>
-						<button type="button" class="role-increase" onclick="adjustRoleAmount(Roles.OBERON, 1)">+</button>
-					</span>
-				</div>
-			</div>
-
-			<div class="bottom-right">
-				<button type="button" class="blue-button" onclick="connection.sendStartGame()">Start Game</button>
-				<button type="button" class="leave-button" onclick="connection.sendLeaveGame()">Leave</button>
-			</div>
-		</div>
-
-		<div id="game-screen" class="screen">
-
-			<div class="column left">
-				<div id="game-player-list">
-				</div>
-			</div>
-			<div class="column middle">
-			</div>
-			<div class="column right">
-				<div id="game-info">
-				</div>
-			</div>
-
+		<div id="slider-screen" class="screen">
+			<img href="Images/shadow.png">
 		</div>
 
 	</body>
