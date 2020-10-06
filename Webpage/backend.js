@@ -29,51 +29,9 @@ class BackendConnection {
 		{
 			setState(params[1]);
 		}
-		if(params[0]=="LobbyOpen")
+		if(params[0]=="SliderValues")
 		{
-			postCheckedLobbyOpen(params[1] == 'true');
-		}
-		if(params[0]=="GameId")
-		{
-			setGameId(params[1]);
-		}
-		if(params[0]=="RedirectToGame")
-		{
-			setGameId(params[1]);populateGame(myRole, players, roles)
-			this.sendJoinGame(params[1]);
-		}
-		if(params[0]=="UpdatedName")
-		{
-			changePlayerNameLobby(params[1], params[2]);
-		}
-		/*if(params[0]=="PlayerJoinedGame")
-		{
-			addPlayerToLobby(params[1], params[2]);
-		}
-		if(params[0]=="PlayerLeftGame")
-		{
-			removePlayerCardLobby(params[1]);
-		}*/
-		if(params[0]=="Players")
-		{
-			remakePlayerCards(params.splice(1));
-		}
-		if(params[0]=="Kicked")
-		{
-			//getKicked();
-		}
-		if(params[0]=="GameStartError")
-		{
-			
-		}
-		if(params[0]=="AllRoles")
-		{
-			updateAllRoleAmounts(params.splice(1));
-		}
-		if(params[0]=="PopulateGame")
-		{
-			//populateGame(myRole, players, roles);
-			populateGame(parmas[1], players, roles);
+			setSliderValues({"Wealth": parseFloat(params[1]),"Military": parseFloat(params[2]),"Consciousness": parseFloat(params[3]),"Culture": parseFloat(params[4]),"Piety": parseFloat(params[5])});
 		}
 	}
 
@@ -93,45 +51,5 @@ class BackendConnection {
 	sendJoinGame(gameId)
 	{
 		this.send("JoinGame|"+cookies.sessionId+"|"+gameId);
-	}
-	
-	sendCreateGame()
-	{
-		this.send("CreateGame");
-	}
-	
-	sendUpdateName(newName)
-	{
-		this.send("UpdateName|"+cookies.sessionId+"|"+newName);
-	}
-	
-	setRoleCount(roleName, number)
-	{
-		this.send("Admin|"+cookies.sessionId+"|SetRole|"+roleName+"|"+number);
-	}
-	
-	sendKick(targetId)
-	{
-		this.send("Admin|"+cookies.sessionId+"|Kick|"+targetId);
-	}
-	
-	sendPromote(targetId)
-	{
-		this.send("Admin|"+cookies.sessionId+"|Promote|"+targetId);
-	}
-	
-	sendStartGame()
-	{
-		this.send("Admin|"+cookies.sessionId+"|StartGame");
-	}
-	
-	sendLeaveGame()
-	{
-		this.send("LeaveGame|"+cookies.sessionId);
-	}
-	
-	checkLobbyOpen(gameId)
-	{
-		this.send("LobbyOpen|"+gameId);
 	}
 }
