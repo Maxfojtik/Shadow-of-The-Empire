@@ -11,7 +11,7 @@ public class ShadowServer
 	{
 		Websockets s = new Websockets();
 		s.start();
-	    System.out.println("Avalon Server started on port: " + s.getPort());
+	    System.out.println("Shadow of The Empire Server started on port: " + s.getPort());
 	    while(true)
 	    {
 	    	for(int i = 0; i < allPlayers.size(); i++)
