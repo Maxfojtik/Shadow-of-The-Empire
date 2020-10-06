@@ -1,6 +1,6 @@
 
 // var wsUri = "ws://localhost:12389"; // Localhost
-var wsUri = "ws://74.140.3.27:12389"; // Max's
+var wsUri = "ws://74.140.3.27:12398"; // Max's
 
 class BackendConnection {
 	constructor() {
