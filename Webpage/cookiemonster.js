@@ -1,26 +1,40 @@
 
+// Default username = "n"
+// Default password = "l"
+
 class CookieMonster {
 
 	constructor() {
 		
-		if (localStorage.sessionId && localStorage.sessionId != "undefined") {
-			this.sessionId = localStorage.sessionId;
+		if (localStorage.username && localStorage.username != "n") {
+			this.username = localStorage.username;
 		}
 		else {
-			this.sessionId = generateSessionID();
-			localStorage.sessionId = this.sessionId;
+			this.username = "n";
 		}
 
+		if (localStorage.password && localStorage.password != "l") {
+			this.password = localStorage.password;
+		}
+		else {
+			this.password = "l";
+		}
 	}
 
-	setPlayerName(name) {
-		localStorage.playerName = name;
+	setUsername(username) {
+		localStorage.username = name;
+		this.username = name;
 	}
-	getPlayerName() {
-		if (localStorage.playerName == undefined)
-			return "???"
-		else
-			return localStorage.playerName; 
+	getUserame() {
+		return this.username; 
+	}
+
+	setPassword(password) {
+		localStorage.password = password;
+		this.password = password;
+	}
+	getPassword() {
+		return this.password; 
 	}
 
 }
