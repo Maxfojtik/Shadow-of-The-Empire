@@ -3,6 +3,9 @@ body {
 	margin: 0px;
 }
 
-.InSliders-screen {
-	background: #f00000;
+#background {
+	background: #540e0e;
+}
+#background-img {
+	width: 20%;
 }
