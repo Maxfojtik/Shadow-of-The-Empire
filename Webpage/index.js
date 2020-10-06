@@ -1,16 +1,8 @@
 var cookies = new CookieMonster()
 var connection = new BackendConnection()
 
-// Whether this client is the host
-var selfIsHost
-
-var numPlayers
-var numRolesSelected
-
 const States = {
 	SLIDERS: "InSliders",
-	LOBBY: "InLobby",
-	GAME: "InGame"
 };
 
 function setState(state) {
