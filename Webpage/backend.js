@@ -33,6 +33,22 @@ class BackendConnection {
 		{
 			setSliderValues({"Wealth": parseFloat(params[1]),"Military": parseFloat(params[2]),"Consciousness": parseFloat(params[3]),"Culture": parseFloat(params[4]),"Piety": parseFloat(params[5])});
 		}
+		if(params[0]=="AcceptSessionID")
+		{
+			acceptSignIn(params[1]);
+		}
+		if(params[0]=="DenySessionID")
+		{
+			denySignIn();
+		}
+		if(params[0]=="AcceptSignup")
+		{
+			acceptSignUp();
+		}
+		if(params[0]=="DenySignup")
+		{
+			denySignUp();
+		}
 	}
 
 	onError(evt) {
@@ -47,9 +63,14 @@ class BackendConnection {
 		this.websocket.send(message);
 		console.log("->: " + message);
 	}
-
-	sendJoinGame(gameId)
+	
+	sendSignUp(sessionId)
 	{
-		this.send("JoinGame|"+cookies.sessionId+"|"+gameId);
+		this.send("Signup|"+sessionId);
+	}
+	
+	sendSessionId(sessionId)
+	{
+		this.send("SetSessionId|"+sessionId);
 	}
 }

@@ -1,60 +1,26 @@
 package ShadowServer;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.java_websocket.WebSocket;
 
 public class ShadowServer 
 {
-	static LinkedList<Player> allPlayers = new LinkedList<Player>();
-	static double wealth = 6;
-	static double military = 6;
-	static double consciousness = 6;
-	static double culture = 6;
-	static double piety = 6;
+	static HashMap<String, Player> players = new HashMap<>();
+	static double wealth = 1;
+	static double military = 2;
+	static double consciousness = 3;
+	static double culture = 4;
+	static double piety = 5;
 	public static void main(String args[]) throws InterruptedException
 	{
 		Websockets s = new Websockets();
 		s.start();
 	    System.out.println("Shadow of The Empire Server started on port: " + s.getPort());
-	    while(true)
-	    {
-	    	for(int i = 0; i < allPlayers.size(); i++)
-	    	{
-	    		if(allPlayers.get(i).disconnectTime!=-1 && System.currentTimeMillis()-allPlayers.get(i).disconnectTime>5000)
-	    		{
-	    			System.out.println("Removing inactive player "+allPlayers.get(i));
-	    			ShadowServer.playerDisconnected(allPlayers.get(i));
-	    			i--;
-	    		}
-	    	}
-	    	Thread.sleep(100);
-	    }
 	}
-	static Player getPlayerById(String id)
+	static boolean doesPlayerExist(String sessionId)
 	{
-		for(int i = 0; i < allPlayers.size(); i++)
-		{
-			if(allPlayers.get(i).sessionID.equals(id))
-			{
-				return allPlayers.get(i);
-			}
-		}
-		return null;
-	}
-	static Player getPlayerByWebsocket(WebSocket sock)
-	{
-		for(int i = 0; i < allPlayers.size(); i++)
-		{
-			if(allPlayers.get(i).socket.equals(sock))
-			{
-				return allPlayers.get(i);
-			}
-		}
-		return null;
-	}
-	static void playerDisconnected(Player dced)
-	{
-		allPlayers.remove(dced);
+		return players.containsKey(sessionId);
 	}
 }
