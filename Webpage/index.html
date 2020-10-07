@@ -19,7 +19,13 @@
 			<img id="background-img" class="column left" src="Images/shadow_middle.png">
 			<h1 id="title-text" class="column middle">Shadow of the Colossus</h1>
 			<div class="column right">
-				<button>Sign In</button>
+				<div>
+					<label>Username</label><br>
+					<input type="text" id="username-signin"><br>
+					<label>PIP</label><br>
+					<input type="text" id="password-signin">
+					<button onclick="sendSignIn()">Sign In</button>
+				</div>
 			</div>
 		</div>
 
@@ -27,8 +33,6 @@
 
 			<div id="connecting-screen" class="screen">
 				<h2>Connecting...</h2>
-				<p></p>
-				<p></p>
 			</div>
 
 			<div id="error-screen" class="screen">

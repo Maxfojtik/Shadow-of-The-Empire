@@ -1,0 +1,38 @@
+
+/* The slider background */
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 60%; /* Full-width */
+  height: 30px; /* Specified height */
+  outline: none; /* Remove outline */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+  border-radius: 15px;
+}
+
+/* The slider handle */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 20px; /* Set a specific slider handle width */
+  height: 30px; /* Slider handle height */
+  background: #000000;
+}
+
+#wealth-slider {
+  background: #FFD700;
+}
+#military-slider {
+  background: #FF0000;
+}
+#consciousness-slider {
+  background: green;
+}
+#culture-slider {
+  background: purple;
+}
+#piety-slider {
+  background: white;
+}
+

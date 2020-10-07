@@ -9,6 +9,8 @@ const States = {
 	ADMIN: "Admin"
 };
 
+var signedIn = false;
+
 function setState(state) {
 	if($('#connecting-screen:hidden').length == 0)
 	{
@@ -77,6 +79,38 @@ function setStateFinal(state) {
 	}
 }
 
+function setSliderValues(values) {
+	for (const [slider, value] of Object.entries(values)) {
+		$("#"+slider.toLowerCase()+"-slider").val(value);
+	}
+}
+
+function sendSignIn() {
+	connection.sendSessionId($("#username-signin").val()+"|"+$("#password-signin").val());
+	console.log("sent a thing")
+}
+function acceptSignIn(sessionId) {
+	var username = sessionId.split("|")[0];
+	var password = sessionId.split("|")[1];
+	cookies.setUsername(username);
+	cookies.setPassword(password);
+	signedIn = true;
+}
+function denySignIn() { // TODO
+	alert("Your username is incorrect for that password");
+}
+
+function sendSignUp() {
+	connection.sendSignUp($("#username-signup").val()+"|"+$("#password-signup").val());
+}
+
+function acceptSignUp() { // When this is called, backend will immediately after call acceptSignIn
+	// TODO send back to page
+}
+
+function denySignUp() {
+	// TODO message
+}
 
 $(document).ready(function(){
 	setTimeout(function(){
