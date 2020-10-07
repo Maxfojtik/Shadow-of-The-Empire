@@ -7,6 +7,11 @@ import org.java_websocket.WebSocket;
 public class ShadowServer 
 {
 	static LinkedList<Player> allPlayers = new LinkedList<Player>();
+	static double wealth = 6;
+	static double military = 6;
+	static double consciousness = 6;
+	static double culture = 6;
+	static double piety = 6;
 	public static void main(String args[]) throws InterruptedException
 	{
 		Websockets s = new Websockets();

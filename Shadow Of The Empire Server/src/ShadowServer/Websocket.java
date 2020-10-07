@@ -14,6 +14,7 @@ class Websockets extends WebSocketServer {
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
 		conn.send("UpdateState|InSliders"); //This method sends a message to the new client
+		conn.send("SliderValues|"+ShadowServer.wealth+"|"+ShadowServer.military+"|"+ShadowServer.consciousness+"|"+ShadowServer.culture+"|"+ShadowServer.piety); //This method sends a message to the new client
 		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
 	}
 
