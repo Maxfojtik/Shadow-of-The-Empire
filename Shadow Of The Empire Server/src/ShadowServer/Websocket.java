@@ -21,12 +21,6 @@ class Websockets extends WebSocketServer {
 	@Override
 	public void onClose(WebSocket conn, int code, String reason, boolean remote) {
 		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " disconnected");
-		Player dcedPlayer = ShadowServer.getPlayerByWebsocket(conn);
-		if(dcedPlayer!=null)
-		{
-			dcedPlayer.socket = null;
-			dcedPlayer.disconnectTime = System.currentTimeMillis();
-		}
 	}
 
 	@Override
@@ -34,9 +28,30 @@ class Websockets extends WebSocketServer {
 	{
 		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + ": " + message);
 		String[] params = message.split("\\|");
-		if(params[0].equals("CreateGame"))
+		if(params[0].equals("SetSessionId"))
 		{
-			System.out.println("Creating a game");
+			if(ShadowServer.doesPlayerExist(params[1]))
+			{
+				conn.send("AcceptSessionID|"+ShadowServer.players.get(params[1]).sessionId);
+			}
+			else
+			{
+				conn.send("DenySessionID");
+			}
+		}
+		else if(params[0].equals("Signup"))
+		{
+			if(ShadowServer.doesPlayerExist(params[1]))
+			{
+				conn.send("DenySignup");
+			}
+			else
+			{
+				Player p = new Player(params[1]);
+				ShadowServer.players.put(p.sessionId, p);
+				conn.send("AcceptSignup");
+				conn.send("AcceptSessionID|"+p.sessionId);
+			}
 		}
 	}
 
