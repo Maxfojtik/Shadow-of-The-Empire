@@ -73,4 +73,8 @@ class BackendConnection {
 	{
 		this.send("SetSessionId|"+sessionId);
 	}
+	sendSliders()
+	{
+		this.send("Sliders");
+	}
 }

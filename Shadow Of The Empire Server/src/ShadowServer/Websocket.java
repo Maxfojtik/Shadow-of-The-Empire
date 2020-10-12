@@ -11,10 +11,14 @@ class Websockets extends WebSocketServer {
 	public Websockets() {
 		super(new InetSocketAddress(12398));
 	}
+	static void sendSliders(WebSocket conn)
+	{
+		conn.send("SliderValues|"+ShadowServer.wealth+"|"+ShadowServer.military+"|"+ShadowServer.consciousness+"|"+ShadowServer.culture+"|"+ShadowServer.piety); 
+	}
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
 		conn.send("UpdateState|InSliders"); //This method sends a message to the new client
-		conn.send("SliderValues|"+ShadowServer.wealth+"|"+ShadowServer.military+"|"+ShadowServer.consciousness+"|"+ShadowServer.culture+"|"+ShadowServer.piety); //This method sends a message to the new client
+		sendSliders(conn);
 		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
 	}
 
@@ -36,6 +40,12 @@ class Websockets extends WebSocketServer {
 			}
 			else
 			{
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				conn.send("DenySessionID");
 			}
 		}
@@ -52,6 +62,10 @@ class Websockets extends WebSocketServer {
 				conn.send("AcceptSignup");
 				conn.send("AcceptSessionID|"+p.sessionId);
 			}
+		}
+		else if(params[0].equals("Sliders"))
+		{
+			sendSliders(conn);
 		}
 	}
 
