@@ -6,26 +6,27 @@
 		<link href='https://fonts.googleapis.com/css?family=Anton' rel='stylesheet'>
 		<script src="cookiemonster.js"></script>
 		<script src="backend.js"></script>
-		<script src="helpers.js"></script>
 		<script src="index.js"></script>
 		<link rel="stylesheet" href="site.css">
 		<link rel="stylesheet" href="slider.css">
-		<title>Shadow of the Colossus</title>
+		<link rel="stylesheet" href="header.css">
+		<link rel="icon" href="Images/icon.png">
+		<title>Shadow of the Empire</title>
 	</head>
 
 	<body id="background">
 
 		<div id="header">
-			<img id="background-img" class="column left" src="Images/shadow_middle.png">
-			<h1 id="title-text" class="column middle">Shadow of the Colossus</h1>
-			<div class="column right">
-				<div>
-					<label>Username</label><br>
-					<input type="text" id="username-signin"><br>
-					<label>PIP</label><br>
-					<input type="text" id="password-signin">
-					<button onclick="sendSignIn()">Sign In</button>
-				</div>
+			<img id="header-img" class="column left" src="Images/shadow_tall_brightened.png">
+			<h1 id="title-text" class="column middle">Shadow of the Empire</h1>
+			<div class="column right" id="header-signin">
+				<label id="username-label">Username</label>
+				<input type="text" id="username-input">
+				<label id="password-label">Password</label>
+				<input type="text" id="password-input" maxlength="4" size="4">
+				<button onclick="sendSignIn()" id="signin-button">Sign In</button>
+				<vl id="signup-divider"></vl>
+				<button onclick="sendSignUp()" id="sign-up-button">Sign Up</button>
 			</div>
 		</div>
 
@@ -42,20 +43,20 @@
 			</div>
 
 			<div id="sliders-screen" class="screen">
-				
 				<div class="slider-main">
 					<h2>Wealth</h2>
 					<input type="range" min="1" max="11" value="6" class="slider" id="wealth-slider">
 					<h2>Miltary</h2>
 					<input type="range" min="1" max="11" value="6" class="slider" id="military-slider">
-					<h2>Consciosness</h2>
+					<h2>Consciousness</h2>
 					<input type="range" min="1" max="11" value="6" class="slider" id="consciousness-slider">
 					<h2>Culture</h2>
 					<input type="range" min="1" max="11" value="6" class="slider" id="culture-slider">
 					<h2>Piety</h2>
 					<input type="range" min="1" max="11" value="6" class="slider" id="piety-slider">
+					<br><br><br>
+					<p>Updates automatically</p>
 				</div>
-
 			</div>
 
 		</div>
