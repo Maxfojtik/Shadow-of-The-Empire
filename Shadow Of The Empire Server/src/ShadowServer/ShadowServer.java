@@ -11,22 +11,27 @@ import org.java_websocket.WebSocket;
 public class ShadowServer 
 {
 	static HashMap<String, Player> players = new HashMap<>();
-	class Empire implements Serializable
+	static class Empire implements Serializable
 	{
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		int wealth = 1;
-		int military = 2;
-		int consciousness = 3;
-		int culture = 4;
-		int piety = 5;
+		int wealth = 6;
+		int military = 6;
+		int consciousness = 6;
+		int culture = 6;
+		int piety = 6;
+	}
+	static void makeANewEmpire()
+	{
+		theEmpire = new Empire();
+		FileSystem.save();
+		System.exit(0);
 	}
 	static Empire theEmpire;
 	public static void main(String args[]) throws InterruptedException
 	{
-//		License.regenerate();
 		try {
 			FileSystem.load();
 		} catch (ClassNotFoundException | IOException e) {
@@ -34,6 +39,8 @@ public class ShadowServer
 			e.printStackTrace();
 			System.exit(1);
 		}
+//		License.regenerate();
+//		makeANewEmpire();
 		Websockets s = new Websockets();
 		s.start();
 	    System.out.println("Shadow of The Empire Server started on port: " + s.getPort());

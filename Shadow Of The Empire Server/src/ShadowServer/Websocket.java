@@ -13,17 +13,12 @@ class Websockets extends WebSocketServer {
 	}
 	static void sendSliders(WebSocket conn)
 	{
-		ShadowServer.theEmpire.wealth = (int)(Math.random()*10+1);
-		ShadowServer.theEmpire.military = (int)(Math.random()*10+1);
-		ShadowServer.theEmpire.consciousness = (int)(Math.random()*10+1);
-		ShadowServer.theEmpire.culture = (int)(Math.random()*10+1);
-		ShadowServer.theEmpire.piety = (int)(Math.random()*10+1);
 		conn.send("SliderValues|"+ShadowServer.theEmpire.wealth+"|"+ShadowServer.theEmpire.military+"|"+ShadowServer.theEmpire.consciousness+"|"+ShadowServer.theEmpire.culture+"|"+ShadowServer.theEmpire.piety); 
 	}
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
-		conn.send("UpdateState|InSliders"); //This method sends a message to the new client
 		sendSliders(conn);
+		conn.send("UpdateState|InSliders"); //This method sends a message to the new client
 		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
 	}
 
@@ -41,7 +36,8 @@ class Websockets extends WebSocketServer {
 		{
 			if(ShadowServer.doesPlayerExist(params[1]+"|"+params[2]))
 			{
-				conn.send("AcceptSessionID|"+ShadowServer.players.get(params[1]+"|"+params[2]).sessionId);
+				Player thePlayer = ShadowServer.players.get(params[1]+"|"+params[2]);
+				conn.send("AcceptSessionID|"+thePlayer.sessionId+"|"+thePlayer.isAdmin);
 			}
 			else
 			{
