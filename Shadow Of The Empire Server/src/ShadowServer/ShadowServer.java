@@ -26,6 +26,7 @@ public class ShadowServer
 	static Empire theEmpire;
 	public static void main(String args[]) throws InterruptedException
 	{
+//		License.regenerate();
 		try {
 			FileSystem.load();
 		} catch (ClassNotFoundException | IOException e) {

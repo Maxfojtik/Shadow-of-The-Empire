@@ -3,6 +3,7 @@ package ShadowServer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -38,7 +39,22 @@ public class FileSystem
             objectOut.writeObject(License.adminCodes);
             objectOut.close();
             
-            
+            FileWriter myWriter = new FileWriter("C:/Users/Maxwell/Dropbox/ShadowServer/AdminCodes.txt");
+			for(String code : License.adminCodes)
+			{
+				myWriter.write(code+"\n");
+			}
+			myWriter.close();
+			
+			  
+			
+			myWriter = new FileWriter("C:/Users/Maxwell/Dropbox/ShadowServer/UserCodes.txt");
+			for(String code : License.userCodes)
+			{
+				myWriter.write(code+"\n");
+			}
+			myWriter.close();
+ 	      
             System.out.println("Saved.");
  
         } catch (Exception ex) {
