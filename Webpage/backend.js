@@ -47,7 +47,7 @@ class BackendConnection {
 		}
 		if(params[0]=="DenySignup")
 		{
-			denySignUp();
+			denySignUp(params[1]);
 		}
 	}
 

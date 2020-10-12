@@ -13,7 +13,12 @@ class Websockets extends WebSocketServer {
 	}
 	static void sendSliders(WebSocket conn)
 	{
-		conn.send("SliderValues|"+ShadowServer.wealth+"|"+ShadowServer.military+"|"+ShadowServer.consciousness+"|"+ShadowServer.culture+"|"+ShadowServer.piety); 
+		ShadowServer.theEmpire.wealth = (int)(Math.random()*10+1);
+		ShadowServer.theEmpire.military = (int)(Math.random()*10+1);
+		ShadowServer.theEmpire.consciousness = (int)(Math.random()*10+1);
+		ShadowServer.theEmpire.culture = (int)(Math.random()*10+1);
+		ShadowServer.theEmpire.piety = (int)(Math.random()*10+1);
+		conn.send("SliderValues|"+ShadowServer.theEmpire.wealth+"|"+ShadowServer.theEmpire.military+"|"+ShadowServer.theEmpire.consciousness+"|"+ShadowServer.theEmpire.culture+"|"+ShadowServer.theEmpire.piety); 
 	}
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
@@ -53,12 +58,19 @@ class Websockets extends WebSocketServer {
 		{
 			if(ShadowServer.doesPlayerExist(params[1]))
 			{
-				conn.send("DenySignup");
+				conn.send("DenySignup|The username has already been taken");
+			}
+			else if(!License.isValid(params[3]))
+			{
+				conn.send("DenySignupCode|The code you gave was WRONG!");
 			}
 			else
 			{
-				Player p = new Player(params[1]);
+				Player p = new Player(params[1], params[2], License.isAdmin(params[3]));
+				System.out.println(params[1]+" created an account with "+params[2]+" as password and the code of "+params[3]);
 				ShadowServer.players.put(p.sessionId, p);
+				License.usedCode(params[3]);
+				FileSystem.save();
 				conn.send("AcceptSignup");
 				conn.send("AcceptSessionID|"+p.sessionId);
 			}
