@@ -8,9 +8,15 @@ public class Player implements Serializable
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	boolean isAdmin = false;
+	String username = "";
+	String password = "";
 	String sessionId = "";
-	public Player(String id)// when someone signs up
+	public Player(String user, String pass, boolean admin)// when someone signs up
 	{
-		sessionId = id;
+		username = user;
+		password = pass;
+		isAdmin = admin;
+		sessionId = user+"|"+pass;
 	}
 }
