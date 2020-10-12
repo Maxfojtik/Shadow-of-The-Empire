@@ -39,9 +39,9 @@ class Websockets extends WebSocketServer {
 		String[] params = message.split("\\|");
 		if(params[0].equals("SetSessionId"))
 		{
-			if(ShadowServer.doesPlayerExist(params[1]))
+			if(ShadowServer.doesPlayerExist(params[1]+"|"+params[2]))
 			{
-				conn.send("AcceptSessionID|"+ShadowServer.players.get(params[1]).sessionId);
+				conn.send("AcceptSessionID|"+ShadowServer.players.get(params[1]+"|"+params[2]).sessionId);
 			}
 			else
 			{
@@ -62,7 +62,7 @@ class Websockets extends WebSocketServer {
 			}
 			else if(!License.isValid(params[3]))
 			{
-				conn.send("DenySignupCode|The code you gave was WRONG!");
+				conn.send("DenySignup|The code you gave was WRONG!");
 			}
 			else
 			{

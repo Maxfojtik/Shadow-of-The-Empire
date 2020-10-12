@@ -52,35 +52,24 @@ public class License
 				}
 			}
 		}
-		adminCodes.add(potentialId);
+		userCodes.add(potentialId);
 		return potentialId;
 	}
-	static void generate()
+	static void regenerate()
 	{
 		System.out.println("YOU ARE ABOUT TO GENERATE NEW CODES!!");
 		System.exit(1);
-		try {
-	      FileWriter myWriter = new FileWriter("C:/Users/Maxwell/Dropbox/ShadowServer/AdminCodes.txt");
-	      for(int i = 0; i < 100; i++)
-	      {
-	    	  myWriter.write(generateAdminId()+"\n");
-	      }
-	      myWriter.close();
-	      
-          
-	      
-	      myWriter = new FileWriter("C:/Users/Maxwell/Dropbox/ShadowServer/UserCodes.txt");
-	      for(int i = 0; i < 1000; i++)
-	      {
-	    	  myWriter.write(generateUserId()+"\n");
-	      }
-	      myWriter.close();
-	      
-	      System.out.println("Successfully wrote to the file.");
-	    } catch (IOException e) {
-	      System.out.println("An error occurred.");
-	      e.printStackTrace();
-	    }
+		ShadowServer.players.clear();
+		for(int i = 0; i < 100; i++)
+		{
+			generateAdminId();
+		}
+		for(int i = 0; i < 1000; i++)
+		{
+			generateUserId();
+		}
+		FileSystem.save();
+		System.exit(0);
 	}
 	static boolean isValid(String code)
 	{
