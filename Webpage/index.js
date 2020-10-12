@@ -88,13 +88,12 @@ function setSliderValues(values) {
 
 // Called by frontend
 function sendSignIn() {
-	connection.sendSessionId($("#username-signin").val()+"|"+$("#password-signin").val());
-	console.log("sent a thing")
+	connection.sendSessionId($("#username-input").val()+"|"+$("#password-input").val());
 }
 // Called by backend
-function acceptSignIn(sessionId) {
-	var username = sessionId.split("|")[0];
-	var password = sessionId.split("|")[1];
+function acceptSignIn(username, password) {
+	console.log("Username: "+username)
+	console.log("Password: "+password)
 	cookies.setUsername(username);
 	cookies.setPassword(password);
 	signedIn = true;

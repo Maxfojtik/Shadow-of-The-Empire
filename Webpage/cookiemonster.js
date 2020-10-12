@@ -42,8 +42,8 @@ class CookieMonster {
 	}
 
 	removeCookies() {
-		setUsername("n")
-		setPassword("l")
+		this.setUsername("n")
+		this.setPassword("l")
 	}
 	
 
