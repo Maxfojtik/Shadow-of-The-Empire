@@ -78,7 +78,7 @@ function setStateFinal(state) {
 }
 
 function requestSliderValues() { // TODO
-	
+	connection.sendSliders();
 }
 function setSliderValues(values) {
 	for (const [slider, value] of Object.entries(values)) {
@@ -98,6 +98,9 @@ function acceptSignIn(sessionId) {
 	cookies.setUsername(username);
 	cookies.setPassword(password);
 	signedIn = true;
+	$('#header-signin').hide();
+	$('#header-signed-in').show();
+	$('#signed-in-as').val("Signed in as "+username)
 }
 // Called by backend
 function denySignIn() { // TODO
@@ -110,8 +113,9 @@ function sendSignUp() {
 	var password = $("#password-input").val()
 
 	if (password.length == 4 && username.length >= 4 && (username+""+password).indexOf("|") === -1) {
-		var confirmed = confirm("Confirm sign up.\nUsername: "+username+"\nPassword: "+password+".\nBe aware this site is not secure, do not reuse passwords")
-		connection.sendSignUp(username+"|"+password);
+		var accountCode = prompt("Confirm sign up.\nUsername: "+username+"\nPassword: "+password+".\nBe aware this site is not secure, do not reuse passwords.\n\nEnter your account code:")
+		accountCode = accountCode.toUpperCase()
+		connection.sendSignUp(username+"|"+password+"|"+accountCode);
 	}
 	else {
 		if ((username+""+password).indexOf("|") === -1) {
@@ -127,8 +131,13 @@ function acceptSignUp() { // When this is called, backend will immediately after
 	// TODO send back to page
 }
 // Called by backend
-function denySignUp() {
-	alert("Unable to sign up, username already taken")
+function denySignUp(reason) {
+	alert("Unable to sign up:\n"+reason)
+}
+
+function signOut() {
+	cookies.removeCookies()
+	location.reload();
 }
 
 $(document).ready(function(){
