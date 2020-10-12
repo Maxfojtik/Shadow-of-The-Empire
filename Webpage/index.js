@@ -10,6 +10,7 @@ const States = {
 };
 
 var signedIn = false;
+var admin = false;
 
 function setState(state) {
 	if($('#connecting-screen:hidden').length == 0)
@@ -91,7 +92,8 @@ function sendSignIn() {
 	connection.sendSessionId($("#username-input").val()+"|"+$("#password-input").val());
 }
 // Called by backend
-function acceptSignIn(username, password) {
+function acceptSignIn(username, password, isAdmin) {
+	admin = isAdmin === "true"
 	console.log("Username: "+username)
 	console.log("Password: "+password)
 	cookies.setUsername(username);
@@ -99,7 +101,7 @@ function acceptSignIn(username, password) {
 	signedIn = true;
 	$('#header-signin').hide();
 	$('#header-signed-in').show();
-	$('#signed-in-as').val("Signed in as "+username)
+	$('#signed-in-as').text(username)
 }
 // Called by backend
 function denySignIn() { // TODO

@@ -21,7 +21,7 @@ class CookieMonster {
 		}
 	}
 
-	setUsername(username) {
+	setUsername(name) {
 		localStorage.username = name;
 		this.username = name;
 	}
@@ -46,5 +46,9 @@ class CookieMonster {
 		this.setPassword("l")
 	}
 	
+	hasLoginCred() {
+		console.log(this.username + " " +this.password)
+		return this.username.length >= 4 && this.password.length === 4
+	}
 
 }

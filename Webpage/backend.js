@@ -15,7 +15,9 @@ class BackendConnection {
 
 	onOpen(evt) {
 		console.log("CONNECTED");
-		this.send("PlayerConnect|"+cookies.sessionId+"|"+cookies.getUsername());
+		if (cookies.hasLoginCred()) {
+			this.sendSessionId(cookies.getUsername()+"|"+cookies.getPassword());
+		}
 	}
 
 	onClose(evt) {
