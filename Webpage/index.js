@@ -3,7 +3,7 @@ var connection = new BackendConnection()
 
 const States = {
 	SLIDERS: "InSliders",
-	LOGGING_IN: "LoggingIn",
+	SIGNING_UP: "SigningUp",
 	SEEING_PROPOSALS: "SeeingProposals",
 	VOTING_PROPOSALS: "VotingProposals",
 	ADMIN: "Admin"
@@ -39,56 +39,59 @@ function setState(state) {
 	}
 	setTimeout(function() { setStateFinal(state) }, 100);
 }
+function hideStatesExcept(state) {
+	states = [
+		'#sliders-screen',
+		'#seeing-proposals-screen',
+		'#voting-proposals-screen',
+		'#admin-screen',
+	]
+	states.forEach(function(screen) { 
+		if (screen !== state) {
+			$(screen).hide();
+		}
+	});
+}
 function setStateFinal(state) {
 	switch (state) {
 		case States.SLIDERS:
 			$('#sliders-screen').fadeTo(300, 1);
-			$('#seeing-proposals-screen').hide();
-			$('#login-screen').hide();
-			$('#voting-proposals-screen').hide();
-			$('#admin-screen').hide();
+			hideStatesExcept('#sliders-screen');
 			break;
-		case States.LOGGING_IN:
-			$('#login-screen').fadeTo(300, 1);
-			$('#sliders-screen').hide();
-			$('#seeing-proposals-screen').hide();
-			$('#voting-proposals-screen').hide();
-			$('#admin-screen').hide();
+		case States.SIGNING_UP:
+			$('#signup-screen').fadeTo(300, 1);
+			hideStatesExcept('#signup-screen');
 			break;
 		case States.SEEING_PROPOSALS:
 			$('#seeing-proposals-screen').fadeTo(300, 1);
-			$('#sliders-screen').hide();
-			$('#login-screen').hide();
-			$('#voting-proposals-screen').hide();
-			$('#admin-screen').hide();
+			hideStatesExcept('#seeing-proposals-screen');
 			break;
 		case States.VOTING_PROPOSALS:
 			$('#voting-proposals-screen').fadeTo(300, 1);
-			$('#sliders-screen').hide();
-			$('#seeing-proposals-screen').hide();
-			$('#login-screen').hide();
-			$('#admin-screen').hide();
+			hideStatesExcept('#voting-proposals-screen');
 			break;
 		case States.ADMIN:
 			$('#admin-screen').fadeTo(300, 1);
-			$('#sliders-screen').hide();
-			$('#seeing-proposals-screen').hide();
-			$('#login-screen').hide();
-			$('#voting-proposals-screen').hide();
+			hideStatesExcept('#admin-screen');
 			break;
 	}
 }
 
+function requestSliderValues() { // TODO
+	
+}
 function setSliderValues(values) {
 	for (const [slider, value] of Object.entries(values)) {
 		$("#"+slider.toLowerCase()+"-slider").val(value);
 	}
 }
 
+// Called by frontend
 function sendSignIn() {
 	connection.sendSessionId($("#username-signin").val()+"|"+$("#password-signin").val());
 	console.log("sent a thing")
 }
+// Called by backend
 function acceptSignIn(sessionId) {
 	var username = sessionId.split("|")[0];
 	var password = sessionId.split("|")[1];
@@ -96,23 +99,40 @@ function acceptSignIn(sessionId) {
 	cookies.setPassword(password);
 	signedIn = true;
 }
+// Called by backend
 function denySignIn() { // TODO
-	alert("Your username is incorrect for that password");
+	alert("Your username is incorrect for that password.");
 }
 
+// Called by frontend
 function sendSignUp() {
-	connection.sendSignUp($("#username-signup").val()+"|"+$("#password-signup").val());
-}
+	var username = $("#username-input").val()
+	var password = $("#password-input").val()
 
+	if (password.length == 4 && username.length >= 4 && (username+""+password).indexOf("|") === -1) {
+		var confirmed = confirm("Confirm sign up.\nUsername: "+username+"\nPassword: "+password+".\nBe aware this site is not secure, do not reuse passwords")
+		connection.sendSignUp(username+"|"+password);
+	}
+	else {
+		if ((username+""+password).indexOf("|") === -1) {
+			alert("Username must be 4 digits or longer.\nPassword must be exactly 4 digits.\nDo not reuse passwords for this site, it is not secure.")
+		}
+		else {
+			alert("Username must be 4 digits or longer.\nPassword must be exactly 4 digits.\nUsername and password may not contain the '|' character.\nDo not reuse passwords for this site, it is not secure.")
+		}
+	}
+}
+// Called by backend
 function acceptSignUp() { // When this is called, backend will immediately after call acceptSignIn
 	// TODO send back to page
 }
-
+// Called by backend
 function denySignUp() {
-	// TODO message
+	alert("Unable to sign up, username already taken")
 }
 
 $(document).ready(function(){
+	setInterval(requestSliderValues, 10000)
 	setTimeout(function(){
 		if(!connection.connectionError)
 		{

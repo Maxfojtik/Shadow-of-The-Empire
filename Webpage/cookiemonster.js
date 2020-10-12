@@ -25,7 +25,7 @@ class CookieMonster {
 		localStorage.username = name;
 		this.username = name;
 	}
-	getUserame() {
+	getUsername() {
 		return this.username; 
 	}
 
