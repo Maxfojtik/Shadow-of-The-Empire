@@ -40,6 +40,11 @@ class CookieMonster {
 	getSessionId() {
 		return getUsername()+"|"+getPassword();
 	}
+
+	removeCookies() {
+		setUsername("n")
+		setPassword("l")
+	}
 	
 
 }

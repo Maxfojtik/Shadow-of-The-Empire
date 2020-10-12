@@ -24,6 +24,7 @@ body {
 
 button {
 	background-color: #361212;
+	padding: 10px 15px;
 	color: lightgray;
 	text-align: center;
 	font-size: 12px;
@@ -40,4 +41,13 @@ button:hover {
 
 input {
 	background-color: lightgray;
+}
+
+.vertical-divider {
+	height: 100%;
+    width: 2px;
+    margin: 0 auto;
+    margin-top: 10px;
+    background: black;
+    background: linear-gradient(#850000, #000, #850000);
 }

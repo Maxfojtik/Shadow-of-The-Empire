@@ -48,17 +48,25 @@
 }
 #signup-divider { 
 	grid-area: f;
-    width: 2px;
-    margin: 0 auto;
-    margin-top: 10px;
-    background: black;
-    background: linear-gradient(#850000, #000, #850000);
 }
 #sign-up-button {
 	grid-area: e;
 	height: 70%;
 	width: 100%;
 	margin: auto;
+	margin-bottom: 0px;
+}
+
+#header-signed-in {
+	display: none;
+	margin-right: 30px;
+	margin-top: 150px;
+	float: right;
+}
+
+#signed-in-as {
+	margin-right: 10px;
+	margin-top: auto;
 	margin-bottom: 0px;
 }
 

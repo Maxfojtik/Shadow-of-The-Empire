@@ -25,8 +25,12 @@
 				<label id="password-label">Password</label>
 				<input type="text" id="password-input" maxlength="4" size="4">
 				<button onclick="sendSignIn()" id="signin-button">Sign In</button>
-				<vl id="signup-divider"></vl>
+				<vl id="signup-divider" class="vertical-divider"></vl>
 				<button onclick="sendSignUp()" id="sign-up-button">Sign Up</button>
+			</div>
+			<div id=header-signed-in>
+				<span id=signed-in-as>Signed in as</span>
+				<button onclick="signOut()">Sign Out</button>
 			</div>
 		</div>
 
