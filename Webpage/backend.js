@@ -37,7 +37,7 @@ class BackendConnection {
 		}
 		if(params[0]=="AcceptSessionID")
 		{
-			acceptSignIn(params[1],params[2]);
+			acceptSignIn(params[1], params[2], params[3]);
 		}
 		if(params[0]=="DenySessionID")
 		{
