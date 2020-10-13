@@ -21,7 +21,7 @@ class Websockets extends WebSocketServer {
 	}
 	static void sendAccept(WebSocket conn, Player p)
 	{
-		conn.send("AcceptSessionID|"+p.sessionId+"|"+p.isAdmin);
+		conn.send("AcceptSessionID|"+p.sessionId+"|"+p.isAdmin+"|"+ShadowServer.theGame.problemPhase);
 	}
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
@@ -87,28 +87,38 @@ class Websockets extends WebSocketServer {
 		{
 			try
 			{
-			ShadowServer.theGame.problems.clear();
+				ShadowServer.theGame.problems.clear();
+				String session = params[1];
+				Player p = ShadowServer.theGame.players.get(session);
+				if(p!=null && p.isAdmin)
+				{
+					String jsonRaw = params[2];
+					JSONArray problemsJson = new JSONArray(jsonRaw);
+					for(int i = 0; i < problemsJson.length(); i++)
+					{
+						JSONObject problemJson = problemsJson.getJSONObject(i);
+						Problem problem = new Problem(problemJson.getString("problemText"));
+						JSONArray optionsJson = problemJson.getJSONArray("optionsText");
+						for(int k = 0; k < optionsJson.length(); k++)
+						{
+							Solution solution = new Solution(optionsJson.getString(k));
+							problem.solutions.add(solution);
+						}
+						ShadowServer.theGame.problems.add(problem);
+					}
+				}
+				ShadowServer.theGame.problemPhase = true;
+			}
+			catch(Exception e) {e.printStackTrace();conn.send("Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
+		}
+		else if(params[0].equals("changeToVotingPhase"))
+		{
 			String session = params[1];
 			Player p = ShadowServer.theGame.players.get(session);
 			if(p!=null && p.isAdmin)
 			{
-				String jsonRaw = params[2];
-				JSONArray problemsJson = new JSONArray(jsonRaw);
-				for(int i = 0; i < problemsJson.length(); i++)
-				{
-					JSONObject problemJson = problemsJson.getJSONObject(i);
-					Problem problem = new Problem(problemJson.getString("problemText"));
-					JSONArray optionsJson = problemJson.getJSONArray("optionsText");
-					for(int k = 0; k < optionsJson.length(); k++)
-					{
-						Solution solution = new Solution(optionsJson.getString(k));
-						problem.solutions.add(solution);
-					}
-					ShadowServer.theGame.problems.add(problem);
-				}
+				ShadowServer.theGame.problemPhase = false;
 			}
-			}
-			catch(Exception e) {conn.send("Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
 		}
 	}
 

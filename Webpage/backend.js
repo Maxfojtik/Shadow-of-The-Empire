@@ -34,7 +34,7 @@ class BackendConnection {
 		}
 		if(params[0]=="AcceptSessionID")
 		{
-			acceptSignIn(params[1], params[2], params[3]);
+			acceptSignIn(params[1], params[2], params[3], params[4]);
 		}
 		if(params[0]=="DenySessionID")
 		{
@@ -81,5 +81,9 @@ class BackendConnection {
 	changeToProblemPhase(jsonText)
 	{
 		this.send("ChangeToProblemPhase|"+cookies.getSessionId()+"|"+jsonText);
+	}
+	changeToVotingPhase()
+	{
+		this.send("changeToVotingPhase|"+cookies.getSessionId());
 	}
 }
