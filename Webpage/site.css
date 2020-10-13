@@ -39,8 +39,24 @@ button:hover {
 	cursor: pointer;
 }
 
+button.admin-button {
+	height: 22px;
+	padding: 3px 10px;
+}
+
 input {
 	background-color: lightgray;
+}
+textarea {
+	background-color: lightgray;
+}
+
+hr {
+	height: 2px;
+	border: 0px;
+    background: gray;
+    background-image: linear-gradient(to right, #360000, gray, #360000);
+    margin: 0px 6%;
 }
 
 .vertical-divider {
@@ -50,4 +66,11 @@ input {
     margin-top: 10px;
     background: black;
     background: linear-gradient(#850000, #000, #850000);
+}
+
+#admin-screen {
+	display: none;
+}
+#error-screen {
+	display: none;
 }
