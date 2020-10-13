@@ -10,6 +10,7 @@
 		<link rel="stylesheet" href="site.css">
 		<link rel="stylesheet" href="slider.css">
 		<link rel="stylesheet" href="header.css">
+		<link rel="stylesheet" href="admin.css">
 		<link rel="icon" href="Images/icon.png">
 		<title>Shadow of the Empire</title>
 	</head>
@@ -36,10 +37,6 @@
 
 		<div id="content">
 
-			<div id="connecting-screen" class="screen">
-				<h2>Connecting...</h2>
-			</div>
-
 			<div id="error-screen" class="screen">
 				<h2>Connection Error</h2>
 				<p>There was an error connecting to the server</p>
@@ -58,12 +55,52 @@
 					<input type="range" min="1" max="11" value="6" class="slider" id="culture-slider">
 					<h2>Piety</h2>
 					<input type="range" min="1" max="11" value="6" class="slider" id="piety-slider">
-					<br><br><br>
 					<p>Updates automatically</p>
 				</div>
+			</div>
+
+			<div id="admin-screen">
+
+				<hr><br>
+
+				<div id="admin-set-sliders-table">
+					<span>Monies:</span><input type="text" id="admin-wealth-input"><button onclick="adminSetWealth()" class="admin-button">Set</button>
+					<span>Fightyness:</span><input type="text" id="admin-wealth-input"><button onclick="adminSetWealth()" class="admin-button">Set</button>
+					<span>Brain size:</span><input type="text" id="admin-wealth-input"><button onclick="adminSetWealth()" class="admin-button">Set</button>
+					<span>Purpleness:</span><input type="text" id="admin-wealth-input"><button onclick="adminSetWealth()" class="admin-button">Set</button>
+					<span>Zealousness:</span><input type="text" id="admin-wealth-input"><button onclick="adminSetWealth()" class="admin-button">Set</button>
+				</div>
+
+				<br>
+
+				<div id="admin-problems"></div>
+
+				<button onclick="adminRemoveProblem()">Remove Problem</button><br>
+				<button onclick="adminAddProblem()">Add Problem</button><br>
+				<button onclick="changeToProblemPhase()">Submit & change to problems phase</button><br>
+
+				
+
 			</div>
 
 		</div>
 
 	</body>
+
+	<!-- Template Zone -->
+	<div style="display: none">
+		<div id="template-admin-problem">
+			<div class="admin-problem">
+				<label>Problem</label><br>
+				<textarea class="admin-problem-description" rows="8" cols="70"></textarea><br>
+				<label>Option 1</label><br>
+				<textarea class="admin-problem-description" rows="6" cols="70"></textarea><br>
+				<label>Option 2</label><br>
+				<textarea class="admin-problem-description" rows="6" cols="70"></textarea><br>
+				<label>Option 3 (Leave blank for 2 options)</label><br>
+				<textarea class="admin-problem-description" rows="6" cols="70"></textarea><br><br>
+			</div>
+		</div>
+
+	</div>
 </html>

@@ -70,6 +70,12 @@
 	bottom: 0;
 }
 
+.login-role-button-header {
+	margin-right: 30px;
+	margin-top: 30px;
+	float: right;
+}
+
 .column {
 	float: left;
 }

@@ -1,82 +1,8 @@
 var cookies = new CookieMonster()
 var connection = new BackendConnection()
 
-const States = {
-	SLIDERS: "InSliders",
-	SIGNING_UP: "SigningUp",
-	SEEING_PROPOSALS: "SeeingProposals",
-	VOTING_PROPOSALS: "VotingProposals",
-	ADMIN: "Admin"
-};
-
 var signedIn = false;
 var admin = false;
-
-function setState(state) {
-	if($('#connecting-screen:hidden').length == 0)
-	{
-		$('#connecting-screen').find("h2").text("Connected.");
-		$('#connecting-screen').fadeTo(100, 0, function() { $('#connecting-screen').hide(); $('#error-screen').hide()});
-	}
-	if($('#sliders-screen:hidden').length == 0)
-	{
-		$('#sliders-screen').fadeTo(100, 0);
-	}
-	if($('#login-screen:hidden').length == 0)
-	{
-		$('#login-screen').fadeTo(100, 0);
-	}
-	if($('#seeing-proposals-screen:hidden').length == 0)
-	{
-		$('#seeing-proposals-screen').fadeTo(100, 0);
-	}
-	if($('#voting-proposals-screen:hidden').length == 0)
-	{
-		$('#voting-proposals-screen').fadeTo(100, 0);
-	}
-	if($('#admin-screen:hidden').length == 0)
-	{
-		$('#admin-screen').fadeTo(100, 0);
-	}
-	setTimeout(function() { setStateFinal(state) }, 100);
-}
-function hideStatesExcept(state) {
-	states = [
-		'#sliders-screen',
-		'#seeing-proposals-screen',
-		'#voting-proposals-screen',
-		'#admin-screen',
-	]
-	states.forEach(function(screen) { 
-		if (screen !== state) {
-			$(screen).hide();
-		}
-	});
-}
-function setStateFinal(state) {
-	switch (state) {
-		case States.SLIDERS:
-			$('#sliders-screen').fadeTo(300, 1);
-			hideStatesExcept('#sliders-screen');
-			break;
-		case States.SIGNING_UP:
-			$('#signup-screen').fadeTo(300, 1);
-			hideStatesExcept('#signup-screen');
-			break;
-		case States.SEEING_PROPOSALS:
-			$('#seeing-proposals-screen').fadeTo(300, 1);
-			hideStatesExcept('#seeing-proposals-screen');
-			break;
-		case States.VOTING_PROPOSALS:
-			$('#voting-proposals-screen').fadeTo(300, 1);
-			hideStatesExcept('#voting-proposals-screen');
-			break;
-		case States.ADMIN:
-			$('#admin-screen').fadeTo(300, 1);
-			hideStatesExcept('#admin-screen');
-			break;
-	}
-}
 
 function requestSliderValues() { // TODO
 	connection.sendSliders();
@@ -94,14 +20,16 @@ function sendSignIn() {
 // Called by backend
 function acceptSignIn(username, password, isAdmin) {
 	admin = isAdmin === "true"
-	console.log("Username: "+username)
-	console.log("Password: "+password)
 	cookies.setUsername(username);
 	cookies.setPassword(password);
 	signedIn = true;
 	$('#header-signin').hide();
 	$('#header-signed-in').show();
 	$('#signed-in-as').text(username)
+
+	if (admin) {
+		$('#admin-screen').show();
+	}
 }
 // Called by backend
 function denySignIn() { // TODO
@@ -139,6 +67,31 @@ function denySignUp(reason) {
 function signOut() {
 	cookies.removeCookies()
 	location.reload();
+}
+
+function adminAddProblem() {
+	var problem = $('#template-admin-problem').html()
+	$('#admin-problems').append(problem)
+}
+function adminRemoveProblem() {
+	$('#admin-screen').find(".admin-problem").last().remove();
+}
+function changeToProblemPhase() {
+	var problems = []
+	$('#admin-screen').find(".admin-problem").each( function(index, element) {
+		optionsText = [element.children[6].value, element.children[10].value]
+		if (element.children[14].value.trim().length > 1) {
+			optionsText.append(element.children[14].value)
+		}
+		problems.push({
+			"problemText": element.children[2].value,
+			"optionsText": optionsText,
+		})
+	});
+	connection.changeToProblemPhase(JSON.stringify(problems))
+}
+function adminSomethingWentWrong(message) {
+	alert("Something went wrong. The action may not have completed correctly.\nServer returned: "+message)
 }
 
 $(document).ready(function(){

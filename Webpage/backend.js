@@ -15,6 +15,7 @@ class BackendConnection {
 
 	onOpen(evt) {
 		console.log("CONNECTED");
+		$("#error-screen").hide();
 		if (cookies.hasLoginCred()) {
 			this.sendSessionId(cookies.getUsername()+"|"+cookies.getPassword());
 		}
@@ -27,10 +28,6 @@ class BackendConnection {
 	onMessage(evt) {
 		console.log('<-: ' + evt.data);
 		var params = evt.data.split("|");
-		if(params[0]=="UpdateState")
-		{
-			setState(params[1]);
-		}
 		if(params[0]=="SliderValues")
 		{
 			setSliderValues({"Wealth": parseFloat(params[1]),"Military": parseFloat(params[2]),"Consciousness": parseFloat(params[3]),"Culture": parseFloat(params[4]),"Piety": parseFloat(params[5])});
@@ -56,9 +53,7 @@ class BackendConnection {
 	onError(evt) {
 		console.log('ERROR: ' + evt.type);
 		this.connectionError = true;
-		$("#connecting-screen").hide();
-		$("#error-screen").addClass('connecting');
-		$("#error-screen").removeClass('screen');
+		$("#error-screen").show();
 	}
 
 	send(message) {
