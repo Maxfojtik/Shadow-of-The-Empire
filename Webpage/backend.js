@@ -48,6 +48,10 @@ class BackendConnection {
 		{
 			denySignUp(params[1]);
 		}
+		if(params[0]=="Error")
+		{
+			adminSomethingWentWrong(params[1]);
+		}
 	}
 
 	onError(evt) {
