@@ -1,6 +1,7 @@
 package ShadowServer;
 
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -88,11 +89,11 @@ class Websockets extends WebSocketServer {
 			try
 			{
 				ShadowServer.theGame.problems.clear();
-				String session = params[1];
+				String session = params[1]+"|"+params[2];
 				Player p = ShadowServer.theGame.players.get(session);
 				if(p!=null && p.isAdmin)
 				{
-					String jsonRaw = params[2];
+					String jsonRaw = params[3];
 					JSONArray problemsJson = new JSONArray(jsonRaw);
 					for(int i = 0; i < problemsJson.length(); i++)
 					{
@@ -107,17 +108,61 @@ class Websockets extends WebSocketServer {
 						ShadowServer.theGame.problems.add(problem);
 					}
 				}
+				else
+				{
+					conn.send("Error|You dont exist or you're not admin.");
+				}
+				FileSystem.save();
 				ShadowServer.theGame.problemPhase = true;
 			}
 			catch(Exception e) {e.printStackTrace();conn.send("Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
 		}
-		else if(params[0].equals("changeToVotingPhase"))
+		else if(params[0].equals("ChangeToVotingPhase"))
 		{
 			String session = params[1];
 			Player p = ShadowServer.theGame.players.get(session);
 			if(p!=null && p.isAdmin)
 			{
 				ShadowServer.theGame.problemPhase = false;
+				FileSystem.save();
+			}
+			else
+			{
+				conn.send("Error|You dont exist or you're not admin.");
+			}
+		}
+		else if(params[0].equals("SetSlider"))
+		{
+			String session = params[1];
+			Player p = ShadowServer.theGame.players.get(session);
+			if(p!=null && p.isAdmin)
+			{
+				int value = Integer.parseInt(params[3]);
+				if(params[2].equals("Wealth"))
+				{
+					ShadowServer.theGame.theEmpire.wealth = value;
+				}
+				else if(params[2].equals("Military"))
+				{
+					ShadowServer.theGame.theEmpire.military = value;
+				}
+				else if(params[2].equals("Consciousness"))
+				{
+					ShadowServer.theGame.theEmpire.consciousness = value;
+				}
+				else if(params[2].equals("Culture"))
+				{
+					ShadowServer.theGame.theEmpire.culture = value;
+				}
+				else if(params[2].equals("Piety"))
+				{
+					ShadowServer.theGame.theEmpire.piety = value;
+				}
+				FileSystem.save();
+			}
+			else
+			{
+				conn.send("Error|You dont exist or you're not admin.");
 			}
 		}
 	}

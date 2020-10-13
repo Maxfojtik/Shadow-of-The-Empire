@@ -78,6 +78,10 @@ class BackendConnection {
 	{
 		this.send("Sliders");
 	}
+	sendSetSlider(slider, value)
+	{
+		this.send("SetSlider|"+cookies.getSessionId()+"|"+slider+"|"+value);
+	}
 	changeToProblemPhase(jsonText)
 	{
 		this.send("ChangeToProblemPhase|"+cookies.getSessionId()+"|"+jsonText);
