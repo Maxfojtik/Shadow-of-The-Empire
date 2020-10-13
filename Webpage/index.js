@@ -3,6 +3,7 @@ var connection = new BackendConnection()
 
 var signedIn = false;
 var admin = false;
+var isProblemPhase = false;
 
 function requestSliderValues() { // TODO
 	connection.sendSliders();
@@ -18,7 +19,7 @@ function sendSignIn() {
 	connection.sendSessionId($("#username-input").val()+"|"+$("#password-input").val());
 }
 // Called by backend
-function acceptSignIn(username, password, isAdmin) {
+function acceptSignIn(username, password, isAdmin, isInProblemPhase) {
 	admin = isAdmin === "true"
 	cookies.setUsername(username);
 	cookies.setPassword(password);
@@ -26,9 +27,17 @@ function acceptSignIn(username, password, isAdmin) {
 	$('#header-signin').hide();
 	$('#header-signed-in').show();
 	$('#signed-in-as').text(username)
-
+	isProblemPhase = isInProblemPhase
 	if (admin) {
 		$('#admin-screen').show();
+	}
+	if (isProblemPhase) {
+		$('#voting-phase').hide();
+		$('#problems-phase').show();
+	}
+	else {
+		$('#voting-phase').show();
+		$('#problems-phase').hide();
 	}
 }
 // Called by backend
@@ -81,7 +90,7 @@ function changeToProblemPhase() {
 	$('#admin-screen').find(".admin-problem").each( function(index, element) {
 		optionsText = [element.children[6].value, element.children[10].value]
 		if (element.children[14].value.trim().length > 1) {
-			optionsText.append(element.children[14].value)
+			optionsText.push(element.children[14].value)
 		}
 		problems.push({
 			"problemText": element.children[2].value,
@@ -89,9 +98,17 @@ function changeToProblemPhase() {
 		})
 	});
 	connection.changeToProblemPhase(JSON.stringify(problems))
+	$('#voting-phase').hide();
+	$('#problems-phase').show();
 }
 function adminSomethingWentWrong(message) {
 	alert("Something went wrong. The action may not have completed correctly.\nServer returned: "+message)
+}
+
+function changeToVotingPhase() {
+	connection.changeToVotingPhase();
+	$('#voting-phase').show();
+	$('#problems-phase').hide();
 }
 
 $(document).ready(function(){

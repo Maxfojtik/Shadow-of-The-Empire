@@ -38,7 +38,7 @@ class CookieMonster {
 	}
 
 	getSessionId() {
-		return getUsername()+"|"+getPassword();
+		return this.getUsername()+"|"+this.getPassword();
 	}
 
 	removeCookies() {
