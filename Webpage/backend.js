@@ -50,7 +50,7 @@ class BackendConnection {
 		}
 		if(params[0]=="Error")
 		{
-			adminSomethingWentWrong(params[1]);
+			somethingWentWrong(params[1]);
 		}
 	}
 
@@ -88,6 +88,6 @@ class BackendConnection {
 	}
 	changeToVotingPhase()
 	{
-		this.send("changeToVotingPhase|"+cookies.getSessionId());
+		this.send("ChangeToVotingPhase|"+cookies.getSessionId());
 	}
 }
