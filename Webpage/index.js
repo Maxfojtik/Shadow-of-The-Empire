@@ -3,6 +3,7 @@ var connection = new BackendConnection()
 
 var signedIn = false;
 var admin = false;
+var isProblemPhase = false;
 
 function requestSliderValues() { // TODO
 	connection.sendSliders();
@@ -18,7 +19,7 @@ function sendSignIn() {
 	connection.sendSessionId($("#username-input").val()+"|"+$("#password-input").val());
 }
 // Called by backend
-function acceptSignIn(username, password, isAdmin) {
+function acceptSignIn(username, password, isAdmin, isInProblemPhase) {
 	admin = isAdmin === "true"
 	cookies.setUsername(username);
 	cookies.setPassword(password);
@@ -26,9 +27,17 @@ function acceptSignIn(username, password, isAdmin) {
 	$('#header-signin').hide();
 	$('#header-signed-in').show();
 	$('#signed-in-as').text(username)
-
+	isProblemPhase = isInProblemPhase
 	if (admin) {
 		$('#admin-screen').show();
+	}
+	if (isProblemPhase) {
+		$('#voting-phase').hide();
+		$('#problems-phase').show();
+	}
+	else {
+		$('#voting-phase').show();
+		$('#problems-phase').hide();
 	}
 }
 // Called by backend
@@ -90,6 +99,7 @@ function changeToProblemPhase() {
 	});
 	connection.changeToProblemPhase(JSON.stringify(problems))
 	$('#voting-phase').hide();
+	$('#problems-phase').show();
 }
 function adminSomethingWentWrong(message) {
 	alert("Something went wrong. The action may not have completed correctly.\nServer returned: "+message)
@@ -97,6 +107,8 @@ function adminSomethingWentWrong(message) {
 
 function changeToVotingPhase() {
 	connection.changeToVotingPhase();
+	$('#voting-phase').show();
+	$('#problems-phase').hide();
 }
 
 $(document).ready(function(){
