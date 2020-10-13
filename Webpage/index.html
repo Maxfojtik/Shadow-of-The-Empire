@@ -73,13 +73,17 @@
 
 				<br>
 
-				<div id="admin-problems"></div>
+				<div id="voting-phase"> <!-- Shown only during voting phase -->
+					<div id="admin-problems"></div>
 
-				<button onclick="adminRemoveProblem()">Remove Problem</button><br>
-				<button onclick="adminAddProblem()">Add Problem</button><br>
-				<button onclick="changeToProblemPhase()">Submit & change to problems phase</button><br>
-
+					<button onclick="adminRemoveProblem()">Remove Problem</button><br>
+					<button onclick="adminAddProblem()">Add Problem</button><br>
+					<button onclick="changeToProblemPhase()">Submit & change to problems phase</button><br>
+				</div>
 				
+				<div id="problems-phase"> <!-- Shown only during problems phase -->
+					<button onclick="changeToVotingPhase()">Start voting phase</button>
+				</div>
 
 			</div>
 

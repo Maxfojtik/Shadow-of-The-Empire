@@ -81,7 +81,7 @@ function changeToProblemPhase() {
 	$('#admin-screen').find(".admin-problem").each( function(index, element) {
 		optionsText = [element.children[6].value, element.children[10].value]
 		if (element.children[14].value.trim().length > 1) {
-			optionsText.append(element.children[14].value)
+			optionsText.push(element.children[14].value)
 		}
 		problems.push({
 			"problemText": element.children[2].value,
@@ -89,9 +89,14 @@ function changeToProblemPhase() {
 		})
 	});
 	connection.changeToProblemPhase(JSON.stringify(problems))
+	$('#voting-phase').hide();
 }
 function adminSomethingWentWrong(message) {
 	alert("Something went wrong. The action may not have completed correctly.\nServer returned: "+message)
+}
+
+function changeToVotingPhase() {
+	connection.changeToVotingPhase();
 }
 
 $(document).ready(function(){
