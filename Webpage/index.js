@@ -101,15 +101,15 @@ function changeToProblemPhase() {
 	$('#voting-phase').hide();
 	$('#problems-phase').show();
 }
-function adminSomethingWentWrong(message) {
+function somethingWentWrong(message) {
 	alert("Something went wrong. The action may not have completed correctly.\nServer returned: "+message)
 }
 
-function adminSetWealth() { connection.sendSetSlider("Wealth", $('admin-wealth-input')) }
-function adminSetMilitary() { connection.sendSetSlider("Military", $('admin-military-input')) }
-function adminSetConsciousness() { connection.sendSetSlider("Consciousness", $('admin-consciousness-input')) }
-function adminSetCulture() { connection.sendSetSlider("Culture", $('admin-culture-input')) }
-function adminSetPiety() { connection.sendSetSlider("Piety", $('admin-piety-input')) }
+function adminSetWealth() { connection.sendSetSlider("Wealth", $('#admin-wealth-input').val() )}
+function adminSetMilitary() { connection.sendSetSlider("Military", $('#admin-military-input').val() )}
+function adminSetConsciousness() { connection.sendSetSlider("Consciousness", $('#admin-consciousness-input').val() )}
+function adminSetCulture() { connection.sendSetSlider("Culture", $('#admin-culture-input').val() )}
+function adminSetPiety() { connection.sendSetSlider("Piety", $('#admin-piety-input').val() )}
 
 function changeToVotingPhase() {
 	connection.changeToVotingPhase();
