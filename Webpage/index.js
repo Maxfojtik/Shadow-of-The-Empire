@@ -32,12 +32,12 @@ function acceptSignIn(username, password, isAdmin, isInProblemPhase) {
 		$('#admin-screen').show();
 	}
 	if (isProblemPhase) {
-		$('#voting-phase').hide();
-		$('#problems-phase').show();
-	}
-	else {
 		$('#voting-phase').show();
 		$('#problems-phase').hide();
+	}
+	else {
+		$('#voting-phase').hide();
+		$('#problems-phase').show();
 	}
 }
 // Called by backend
@@ -104,6 +104,12 @@ function changeToProblemPhase() {
 function adminSomethingWentWrong(message) {
 	alert("Something went wrong. The action may not have completed correctly.\nServer returned: "+message)
 }
+
+function adminSetWealth() { connection.sendSetSlider("Wealth", $('admin-wealth-input')) }
+function adminSetMilitary() { connection.sendSetSlider("Military", $('admin-military-input')) }
+function adminSetConsciousness() { connection.sendSetSlider("Consciousness", $('admin-consciousness-input')) }
+function adminSetCulture() { connection.sendSetSlider("Culture", $('admin-culture-input')) }
+function adminSetPiety() { connection.sendSetSlider("Piety", $('admin-piety-input')) }
 
 function changeToVotingPhase() {
 	connection.changeToVotingPhase();
