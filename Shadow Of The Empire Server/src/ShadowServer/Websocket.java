@@ -2,6 +2,8 @@ package ShadowServer;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
+import java.util.Collection;
+import java.util.List;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -119,7 +121,7 @@ class Websockets extends WebSocketServer {
 		}
 		else if(params[0].equals("ChangeToVotingPhase"))
 		{
-			String session = params[1];
+			String session = params[1]+"|"+params[2];
 			Player p = ShadowServer.theGame.players.get(session);
 			if(p!=null && p.isAdmin)
 			{
@@ -133,36 +135,48 @@ class Websockets extends WebSocketServer {
 		}
 		else if(params[0].equals("SetSlider"))
 		{
-			String session = params[1];
-			Player p = ShadowServer.theGame.players.get(session);
-			if(p!=null && p.isAdmin)
+			try
 			{
-				int value = Integer.parseInt(params[3]);
-				if(params[2].equals("Wealth"))
+				String session = params[1]+"|"+params[2];
+				Player p = ShadowServer.theGame.players.get(session);
+				if(p!=null && p.isAdmin)
 				{
-					ShadowServer.theGame.theEmpire.wealth = value;
+					int value = Integer.parseInt(params[4]);
+					if(params[3].equals("Wealth"))
+					{
+						ShadowServer.theGame.theEmpire.wealth = value;
+					}
+					else if(params[3].equals("Military"))
+					{
+						ShadowServer.theGame.theEmpire.military = value;
+					}
+					else if(params[3].equals("Consciousness"))
+					{
+						ShadowServer.theGame.theEmpire.consciousness = value;
+					}
+					else if(params[3].equals("Culture"))
+					{
+						ShadowServer.theGame.theEmpire.culture = value;
+					}
+					else if(params[3].equals("Piety"))
+					{
+						ShadowServer.theGame.theEmpire.piety = value;
+					}
+					Collection<WebSocket> connections = getConnections();
+					for(WebSocket socket : connections)
+					{
+						sendSliders(socket);
+					}
+					FileSystem.save();
 				}
-				else if(params[2].equals("Military"))
+				else
 				{
-					ShadowServer.theGame.theEmpire.military = value;
+					conn.send("Error|You dont exist or you're not admin.");
 				}
-				else if(params[2].equals("Consciousness"))
-				{
-					ShadowServer.theGame.theEmpire.consciousness = value;
-				}
-				else if(params[2].equals("Culture"))
-				{
-					ShadowServer.theGame.theEmpire.culture = value;
-				}
-				else if(params[2].equals("Piety"))
-				{
-					ShadowServer.theGame.theEmpire.piety = value;
-				}
-				FileSystem.save();
 			}
-			else
+			catch(Exception e)
 			{
-				conn.send("Error|You dont exist or you're not admin.");
+				conn.send("Error|no");
 			}
 		}
 	}
