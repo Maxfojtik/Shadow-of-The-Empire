@@ -5,6 +5,10 @@ import java.net.InetSocketAddress;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import ShadowServer.Problem.Solution;
 
 
 class Websockets extends WebSocketServer {
@@ -13,7 +17,11 @@ class Websockets extends WebSocketServer {
 	}
 	static void sendSliders(WebSocket conn)
 	{
-		conn.send("SliderValues|"+ShadowServer.theEmpire.wealth+"|"+ShadowServer.theEmpire.military+"|"+ShadowServer.theEmpire.consciousness+"|"+ShadowServer.theEmpire.culture+"|"+ShadowServer.theEmpire.piety); 
+		conn.send("SliderValues|"+ShadowServer.theGame.theEmpire.wealth+"|"+ShadowServer.theGame.theEmpire.military+"|"+ShadowServer.theGame.theEmpire.consciousness+"|"+ShadowServer.theGame.theEmpire.culture+"|"+ShadowServer.theGame.theEmpire.piety); 
+	}
+	static void sendAccept(WebSocket conn, Player p)
+	{
+		conn.send("AcceptSessionID|"+p.sessionId+"|"+p.isAdmin);
 	}
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
@@ -36,8 +44,8 @@ class Websockets extends WebSocketServer {
 		{
 			if(ShadowServer.doesPlayerExist(params[1]+"|"+params[2]))
 			{
-				Player thePlayer = ShadowServer.players.get(params[1]+"|"+params[2]);
-				conn.send("AcceptSessionID|"+thePlayer.sessionId+"|"+thePlayer.isAdmin);
+				Player thePlayer = ShadowServer.theGame.players.get(params[1]+"|"+params[2]);
+				sendAccept(conn, thePlayer);
 			}
 			else
 			{
@@ -64,16 +72,43 @@ class Websockets extends WebSocketServer {
 			{
 				Player p = new Player(params[1], params[2], License.isAdmin(params[3]));
 				System.out.println(params[1]+" created an account with "+params[2]+" as password and the code of "+params[3]);
-				ShadowServer.players.put(p.sessionId, p);
+				ShadowServer.theGame.players.put(p.sessionId, p);
 				License.usedCode(params[3]);
 				FileSystem.save();
 				conn.send("AcceptSignup");
-				conn.send("AcceptSessionID|"+p.sessionId);
+				sendAccept(conn, p);
 			}
 		}
 		else if(params[0].equals("Sliders"))
 		{
 			sendSliders(conn);
+		}
+		else if(params[0].equals("ChangeToProblemPhase"))
+		{
+			try
+			{
+			ShadowServer.theGame.problems.clear();
+			String session = params[1];
+			Player p = ShadowServer.theGame.players.get(session);
+			if(p!=null && p.isAdmin)
+			{
+				String jsonRaw = params[2];
+				JSONArray problemsJson = new JSONArray(jsonRaw);
+				for(int i = 0; i < problemsJson.length(); i++)
+				{
+					JSONObject problemJson = problemsJson.getJSONObject(i);
+					Problem problem = new Problem(problemJson.getString("problemText"));
+					JSONArray optionsJson = problemJson.getJSONArray("optionsText");
+					for(int k = 0; k < optionsJson.length(); k++)
+					{
+						Solution solution = new Solution(optionsJson.getString(k));
+						problem.solutions.add(solution);
+					}
+					ShadowServer.theGame.problems.add(problem);
+				}
+			}
+			}
+			catch(Exception e) {conn.send("Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
 		}
 	}
 

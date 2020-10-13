@@ -1,11 +1,9 @@
 package ShadowServer;
 
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+
+import ShadowServer.ShadowServer.Game;
 
 public class License 
 {
@@ -19,15 +17,13 @@ public class License
 	      sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
 	   return sb.toString();
 	}
-	static ArrayList<String> adminCodes = new ArrayList<>();
-	static ArrayList<String> userCodes = new ArrayList<>();
-	static String generateAdminId()
+	static String generateAdminId(Game g)
 	{
 		String potentialId = "";
 		while(potentialId.equals(""))
 		{
 			potentialId = "A"+randomString(4, CONS);
-			for(String lis : adminCodes)
+			for(String lis : g.adminCodes)
 			{
 				if(lis.equals(potentialId))
 				{
@@ -35,16 +31,16 @@ public class License
 				}
 			}
 		}
-		adminCodes.add(potentialId);
+		g.adminCodes.add(potentialId);
 		return potentialId;
 	}
-	static String generateUserId()
+	static String generateUserId(Game g)
 	{
 		String potentialId = "";
 		while(potentialId.equals(""))
 		{
 			potentialId = "B"+randomString(4, CONS);
-			for(String lis : adminCodes)
+			for(String lis : g.adminCodes)
 			{
 				if(lis.equals(potentialId))
 				{
@@ -52,33 +48,31 @@ public class License
 				}
 			}
 		}
-		userCodes.add(potentialId);
+		g.userCodes.add(potentialId);
 		return potentialId;
 	}
-	static void regenerate()
+	static void regenerate(Game g)
 	{
 		System.out.println("YOU ARE ABOUT TO GENERATE NEW CODES!!");
-		System.exit(1);
-		ShadowServer.players.clear();
+//		System.exit(1);
+		g.players.clear();
 		for(int i = 0; i < 100; i++)
 		{
-			generateAdminId();
+			generateAdminId(g);
 		}
 		for(int i = 0; i < 1000; i++)
 		{
-			generateUserId();
+			generateUserId(g);
 		}
-		FileSystem.save();
-		System.exit(0);
 	}
 	static boolean isValid(String code)
 	{
-		return adminCodes.contains(code) || userCodes.contains(code);
+		return ShadowServer.theGame.adminCodes.contains(code) || ShadowServer.theGame.userCodes.contains(code);
 	}
 	static void usedCode(String code)
 	{
-		userCodes.remove(code);
-		adminCodes.remove(code);
+		ShadowServer.theGame.userCodes.remove(code);
+		ShadowServer.theGame.adminCodes.remove(code);
 	}
 	static boolean isAdmin(String code)
 	{

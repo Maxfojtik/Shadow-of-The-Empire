@@ -2,15 +2,35 @@ package ShadowServer;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
-import org.java_websocket.WebSocket;
+import ShadowServer.ShadowServer.Game;
 
 public class ShadowServer 
 {
-	static HashMap<String, Player> players = new HashMap<>();
+	static class Game implements Serializable
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		HashMap<String, Player> players = new HashMap<>();
+		ArrayList<Problem> problems = new ArrayList<>();
+		Boolean problemPhase = false;
+		Empire theEmpire = new Empire();
+		ArrayList<String> adminCodes = new ArrayList<>();
+		ArrayList<String> userCodes = new ArrayList<>();
+		public Game()
+		{
+			System.out.println("YOU ARE ABOUT TO GENERATE NEW GAME!!");
+//			System.exit(1);
+			License.regenerate(this);
+			FileSystem.save(this);
+			System.exit(0);
+		}
+	}
+	static Game theGame;
 	static class Empire implements Serializable
 	{
 		/**
@@ -25,13 +45,13 @@ public class ShadowServer
 	}
 	static void makeANewEmpire()
 	{
-		theEmpire = new Empire();
+		ShadowServer.theGame.theEmpire = new Empire();
 		FileSystem.save();
 		System.exit(0);
 	}
-	static Empire theEmpire;
 	public static void main(String args[]) throws InterruptedException
 	{
+//		ShadowServer.theGame = new Game();
 		try {
 			FileSystem.load();
 		} catch (ClassNotFoundException | IOException e) {
@@ -39,14 +59,12 @@ public class ShadowServer
 			e.printStackTrace();
 			System.exit(1);
 		}
-//		License.regenerate();
-//		makeANewEmpire();
 		Websockets s = new Websockets();
 		s.start();
 	    System.out.println("Shadow of The Empire Server started on port: " + s.getPort());
 	}
 	static boolean doesPlayerExist(String sessionId)
 	{
-		return players.containsKey(sessionId);
+		return ShadowServer.theGame.players.containsKey(sessionId);
 	}
 }

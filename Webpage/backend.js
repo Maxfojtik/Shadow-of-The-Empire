@@ -77,4 +77,8 @@ class BackendConnection {
 	{
 		this.send("Sliders");
 	}
+	changeToProblemPhase(jsonText)
+	{
+		this.send("ChangeToProblemPhase|"+cookies.getSessionId()+"|"+jsonText);
+	}
 }

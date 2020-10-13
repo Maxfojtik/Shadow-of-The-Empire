@@ -10,37 +10,23 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ShadowServer.ShadowServer.Game;
+
 public class FileSystem 
 {
 	static final String saveLocation = "C:/Users/Maxwell/Dropbox/ShadowServer/";
-	public static void save()
+	public static void save(Game g)
 	{
 		try {
 		 
-            FileOutputStream fileOut = new FileOutputStream(saveLocation+"Players.hm");
+            FileOutputStream fileOut = new FileOutputStream(saveLocation+"TheGame.game");
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(ShadowServer.players);
+            objectOut.writeObject(g);
             objectOut.close();
             
-            
-            fileOut = new FileOutputStream(saveLocation+"TheEmpire.em");
-            objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(ShadowServer.theEmpire);
-            objectOut.close();
-            
-  	      
-			fileOut = new FileOutputStream(saveLocation+"UserCodes.codes");
-			objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(License.userCodes);
-            objectOut.close();
-            
-            fileOut = new FileOutputStream(saveLocation+"AdminCodes.codes");
-  	      	objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(License.adminCodes);
-            objectOut.close();
             
             FileWriter myWriter = new FileWriter("C:/Users/Maxwell/Dropbox/ShadowServer/AdminCodes.txt");
-			for(String code : License.adminCodes)
+			for(String code : g.adminCodes)
 			{
 				myWriter.write(code+"\n");
 			}
@@ -49,7 +35,7 @@ public class FileSystem
 			  
 			
 			myWriter = new FileWriter("C:/Users/Maxwell/Dropbox/ShadowServer/UserCodes.txt");
-			for(String code : License.userCodes)
+			for(String code : g.userCodes)
 			{
 				myWriter.write(code+"\n");
 			}
@@ -61,33 +47,17 @@ public class FileSystem
             ex.printStackTrace();
         }
 	}
+	public static void save()
+	{
+		save(ShadowServer.theGame);
+	}
 	@SuppressWarnings("unchecked")
 	public static void load() throws ClassNotFoundException, IOException
 	{
-		FileInputStream fi = new FileInputStream(new File(saveLocation+"Players.hm"));
+		FileInputStream fi = new FileInputStream(new File(saveLocation+"TheGame.game"));
 		ObjectInputStream oi = new ObjectInputStream(fi);
 
-		HashMap<String, Player> pr1 = (HashMap<String, Player>) oi.readObject();
-		ShadowServer.players = pr1;
-		oi.close();
-		fi.close();
-		
-		fi = new FileInputStream(new File(saveLocation+"TheEmpire.em"));
-		oi = new ObjectInputStream(fi);
-		ShadowServer.theEmpire = (ShadowServer.Empire) oi.readObject();
-		oi.close();
-		fi.close();
-
-		fi = new FileInputStream(new File(saveLocation+"AdminCodes.codes"));
-		oi = new ObjectInputStream(fi);
-		License.adminCodes = (ArrayList<String>) oi.readObject();
-		oi.close();
-		fi.close();
-		
-		
-		fi = new FileInputStream(new File(saveLocation+"UserCodes.codes"));
-		oi = new ObjectInputStream(fi);
-		License.userCodes = (ArrayList<String>) oi.readObject();
+		ShadowServer.theGame = (ShadowServer.Game) oi.readObject();
 		oi.close();
 		fi.close();
 	}
