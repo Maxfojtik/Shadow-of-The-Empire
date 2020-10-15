@@ -11,6 +11,7 @@
 		<link rel="stylesheet" href="slider.css">
 		<link rel="stylesheet" href="header.css">
 		<link rel="stylesheet" href="admin.css">
+		<link rel="stylesheet" href="user.css">
 		<link rel="icon" href="Images/icon.png">
 		<title>Shadow of the Empire</title>
 	</head>
@@ -87,8 +88,15 @@
 
 			</div>
 
-		</div>
+			<div id="user-screen">
 
+				<hr><br>
+
+				<div id="tab-button-holder" class="tabs">
+				</div>
+
+			</div>
+		</div>
 	</body>
 
 	<!-- Template Zone -->
@@ -103,6 +111,18 @@
 				<textarea class="admin-problem-description" rows="6" cols="70"></textarea><br>
 				<label>Option 3 (Leave blank for 2 options)</label><br>
 				<textarea class="admin-problem-description" rows="6" cols="70"></textarea><br><br>
+			</div>
+		</div>
+
+		<div id="template-tablinks">
+			<button class="tablinks" onclick="openTab(event, 'Problem1')"></button>
+		</div>
+
+		<div id="template-problem-container">
+			<div class="problem-container">
+				<p class="problem-text"></p>
+				<div class="given-solutions"></div>
+				<div class="proposed-solutions"></div>
 			</div>
 		</div>
 
