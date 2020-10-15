@@ -5,9 +5,6 @@ var signedIn = false;
 var admin = false;
 var isProblemPhase = false;
 
-function requestSliderValues() { // TODO
-	connection.sendSliders();
-}
 function setSliderValues(values) {
 	for (const [slider, value] of Object.entries(values)) {
 		$("#"+slider.toLowerCase()+"-slider").val(value);
@@ -21,23 +18,26 @@ function sendSignIn() {
 // Called by backend
 function acceptSignIn(username, password, isAdmin, isInProblemPhase) {
 	admin = isAdmin === "true"
+	isProblemPhase = isInProblemPhase === "true"
 	cookies.setUsername(username);
 	cookies.setPassword(password);
 	signedIn = true;
 	$('#header-signin').hide();
 	$('#header-signed-in').show();
 	$('#signed-in-as').text(username)
-	isProblemPhase = isInProblemPhase
 	if (admin) {
 		$('#admin-screen').show();
 	}
-	if (isProblemPhase) {
-		$('#voting-phase').show();
-		$('#problems-phase').hide();
-	}
 	else {
+		$('#user-screen').show();
+	}
+	if (isProblemPhase) {
 		$('#voting-phase').hide();
 		$('#problems-phase').show();
+	}
+	else {
+		$('#voting-phase').show();
+		$('#problems-phase').hide();
 	}
 }
 // Called by backend
@@ -117,8 +117,28 @@ function changeToVotingPhase() {
 	$('#problems-phase').hide();
 }
 
+// User
+
+function populateUserProblemsPhase(dataString) {
+	dataJSON = JSON.parse(dataString)
+	problems = dataJSON.problems
+	hasSubmitted = dataJSON.hasSubmitted
+	problems.forEach( function( problem, index ) {
+		// Button for tab
+		var problemTab = $('#template-tablinks').html("Problem "+index)
+		problemTab.click( function() { 
+			$(".tabcontent").hide()
+			$(".tabcontent").removeClass("active")
+			$(".tablinks").removeClass("active")
+			this.show()
+			this.addClass("active") 
+		})
+		$('#tab-button-holder').append(problemTab)
+		// Problem container
+	})
+}
+
 $(document).ready(function(){
-	setInterval(requestSliderValues, 10000)
 	setTimeout(function(){
 		if(!connection.connectionError)
 		{
