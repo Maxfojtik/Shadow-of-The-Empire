@@ -15,11 +15,14 @@ public class Problem implements Serializable
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		int votesFor = 0;
+//		int votesFor = 0;
 		String text = "";
-		public Solution(String t)
+		boolean playerSubmitted = false;
+		ArrayList<Player> whoVotedOnMe = new ArrayList<>();
+		public Solution(String t, boolean player)
 		{
 			text = t;
+			playerSubmitted = player;
 		}
 	}
 	ArrayList<Solution> solutions = new ArrayList<>();

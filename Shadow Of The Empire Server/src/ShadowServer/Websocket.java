@@ -2,6 +2,7 @@ package ShadowServer;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,7 +26,49 @@ class Websockets extends WebSocketServer {
 	static void sendAccept(WebSocket conn, Player p)
 	{
 		conn.send("AcceptSessionID|"+p.sessionId+"|"+p.isAdmin+"|"+ShadowServer.theGame.problemPhase);
+		sendProblems(conn, p);
 	}
+	
+	static void sendProblems(WebSocket conn, Player p)
+	{
+		JSONObject json = new JSONObject();
+		JSONArray problems = new JSONArray();
+		json.put("hasSummited", p.hasSubmittedSolution);
+		for(int i = 0; i < ShadowServer.theGame.problems.size(); i++)
+		{
+			Problem problem = ShadowServer.theGame.problems.get(i);
+			JSONObject problemJson = new JSONObject();
+			problemJson.put("problemText", problem.text);
+			JSONArray proposedSolutions = new JSONArray();
+			JSONArray givenSolutions = new JSONArray();
+			for(int j = 0; j < problem.solutions.size(); j++)
+			{
+				Solution s = problem.solutions.get(j);
+				if(s.playerSubmitted)
+				{
+					JSONObject solutionJson = new JSONObject();
+					solutionJson.put("text", s.text);
+					JSONArray solutionVotes = new JSONArray();
+					for(int k = 0; k < s.whoVotedOnMe.size(); k++)
+					{
+						solutionVotes.put(s.whoVotedOnMe.get(k));
+					}
+					solutionJson.put("Votes", solutionVotes);
+					proposedSolutions.put(s);
+				}
+				else
+				{
+					givenSolutions.put(s.text);
+				}
+			}
+			problemJson.put("givenSolutions", givenSolutions);
+			problemJson.put("proposedSolutions", proposedSolutions);
+			problems.put(problemJson);
+		}
+		json.put("problems", problems);
+		conn.send("Problems|"+json.toString());
+	}
+	
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
 		sendSliders(conn);
@@ -104,7 +147,7 @@ class Websockets extends WebSocketServer {
 						JSONArray optionsJson = problemJson.getJSONArray("optionsText");
 						for(int k = 0; k < optionsJson.length(); k++)
 						{
-							Solution solution = new Solution(optionsJson.getString(k));
+							Solution solution = new Solution(optionsJson.getString(k), false);
 							problem.solutions.add(solution);
 						}
 						ShadowServer.theGame.problems.add(problem);
@@ -114,8 +157,8 @@ class Websockets extends WebSocketServer {
 				{
 					conn.send("Error|You dont exist or you're not admin.");
 				}
-				FileSystem.save();
 				ShadowServer.theGame.problemPhase = true;
+				FileSystem.save();
 			}
 			catch(Exception e) {e.printStackTrace();conn.send("Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
 		}
@@ -174,10 +217,22 @@ class Websockets extends WebSocketServer {
 					conn.send("Error|You dont exist or you're not admin.");
 				}
 			}
+			catch(NumberFormatException e)
+			{
+				conn.send("Error|Enter an integer please");
+			}
 			catch(Exception e)
 			{
-				conn.send("Error|no");
+				conn.send("Error|"+e.toString());
 			}
+		}
+//		else if(params[0].equals("Problems"))
+//		{
+//			sendProblems(conn, p);
+//		}
+		else if(params[0].equals("SubmitSolution"))
+		{
+			
 		}
 	}
 

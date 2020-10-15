@@ -24,7 +24,7 @@ public class ShadowServer
 		public Game()
 		{
 			System.out.println("YOU ARE ABOUT TO GENERATE NEW GAME!!");
-//			System.exit(1);
+			System.exit(1);
 			License.regenerate(this);
 			FileSystem.save(this);
 			System.exit(0);

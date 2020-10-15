@@ -12,6 +12,7 @@ public class Player implements Serializable
 	String username = "";
 	String password = "";
 	String sessionId = "";
+	boolean hasSubmittedSolution = false;
 	public Player(String user, String pass, boolean admin)// when someone signs up
 	{
 		username = user;

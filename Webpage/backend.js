@@ -52,6 +52,10 @@ class BackendConnection {
 		{
 			somethingWentWrong(params[1]);
 		}
+		if(params[0]=="Problems")
+		{
+			populateUserProblemsPhase(params[1]);
+		}
 	}
 
 	onError(evt) {
@@ -89,5 +93,9 @@ class BackendConnection {
 	changeToVotingPhase()
 	{
 		this.send("ChangeToVotingPhase|"+cookies.getSessionId());
+	}
+	submitSolution(solutionText)
+	{
+		this.send("SubmitSolution|"+cookies.getSessionId()+"|"+solutionText);
 	}
 }
