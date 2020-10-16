@@ -40,11 +40,6 @@ button:hover {
 	cursor: pointer;
 }
 
-button.admin-button {
-	height: 22px;
-	padding: 3px 10px;
-}
-
 input {
 	background-color: lightgray;
 }

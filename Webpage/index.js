@@ -88,13 +88,17 @@ function adminRemoveProblem() {
 function changeToProblemPhase() {
 	var problems = []
 	$('#admin-screen').find(".admin-problem").each( function(index, element) {
-		optionsText = [element.children[6].value, element.children[10].value]
-		if (element.children[14].value.trim().length > 1) {
-			optionsText.push(element.children[14].value)
+		solutions = [
+			{"title": element.children[8].value, "text": element.children[10].value}, 
+			{"title": element.children[14].value, "text": element.children[16].value}
+		]
+		if (element.children[20].value.trim().length > 1) {
+			solutions.push({"title": element.children[20].value, "text": element.children[22].value})
 		}
 		problems.push({
-			"problemText": element.children[2].value,
-			"optionsText": optionsText,
+			"problemTitle": element.children[2].value,
+			"problemText": element.children[4].value,
+			"solutions": solutions,
 		})
 	});
 	connection.changeToProblemPhase(JSON.stringify(problems))
@@ -163,9 +167,11 @@ function populateUserProblemsPhase(dataString) {
 			$('.propose-self-solution-container').hide()
 		}
 		else {
-			problemContent.find('.propose-self-solution-container').find("button").click( function() {
+			problemContent.find('.propose-self-solution-container').find("button").on("click", function() {
 				// Send it
-				connection.proposeSolution(index-1, problemContent.find('.proposed-input').text())
+				console.log($(this))
+				console.log($(this).prev().prev())
+				connection.proposeSolution(index-1, $(this).parent().find('textarea:eq(1)').val(), $(this).parent().find('textarea:eq(0)').val())
 				// Remove the options
 				$('.propose-self-solution-container').hide();
 			})
