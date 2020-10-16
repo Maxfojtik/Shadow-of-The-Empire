@@ -179,6 +179,8 @@ function populateUserProblemsPhase(dataString) {
 	})
 }
 
+
+
 $(document).ready(function(){
 	setTimeout(function(){
 		if(!connection.connectionError)
