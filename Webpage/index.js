@@ -148,6 +148,7 @@ function populateUserProblemsPhase(dataString) {
 		$('#tabs-content-holder').append(problemContent)
 		problemContent.attr('id', 'problem-'+index)
 		// Add problem text
+		problemContent.find(".problem-title").text(problem["problemTitle"])
 		problemContent.find(".problem-text").text(problem["problemText"])
 		// Add given solutions text
 		problem["givenSolutions"].forEach( function(solution) {
