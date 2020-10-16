@@ -26,7 +26,10 @@ class Websockets extends WebSocketServer {
 	static void sendAccept(WebSocket conn, Player p)
 	{
 		conn.send("AcceptSessionID|"+p.sessionId+"|"+p.isAdmin+"|"+ShadowServer.theGame.problemPhase);
-		sendProblems(conn, p);
+		if(!p.isAdmin && ShadowServer.theGame.problemPhase)
+		{
+			sendProblems(conn, p);
+		}
 	}
 	
 	static void sendProblems(WebSocket conn, Player p)
@@ -68,7 +71,6 @@ class Websockets extends WebSocketServer {
 		json.put("problems", problems);
 		conn.send("Problems|"+json.toString());
 	}
-	
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
 		sendSliders(conn);
@@ -84,132 +86,93 @@ class Websockets extends WebSocketServer {
 	@Override
 	public void onMessage(WebSocket conn, String message) 
 	{
-		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + ": " + message);
-		String[] params = message.split("\\|");
-		if(params[0].equals("SetSessionId"))
+		try
 		{
-			if(ShadowServer.doesPlayerExist(params[1]+"|"+params[2]))
+			System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + ": " + message);
+			String[] params = message.split("\\|");
+			if(params[0].equals("SetSessionId"))
 			{
-				Player thePlayer = ShadowServer.theGame.players.get(params[1]+"|"+params[2]);
-				sendAccept(conn, thePlayer);
-			}
-			else
-			{
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				conn.send("DenySessionID");
-			}
-		}
-		else if(params[0].equals("Signup"))
-		{
-			if(ShadowServer.doesPlayerExist(params[1]))
-			{
-				conn.send("DenySignup|The username has already been taken");
-			}
-			else if(!License.isValid(params[3]))
-			{
-				conn.send("DenySignup|The code you gave was WRONG!");
-			}
-			else
-			{
-				Player p = new Player(params[1], params[2], License.isAdmin(params[3]));
-				System.out.println(params[1]+" created an account with "+params[2]+" as password and the code of "+params[3]);
-				ShadowServer.theGame.players.put(p.sessionId, p);
-				License.usedCode(params[3]);
-				FileSystem.save();
-				conn.send("AcceptSignup");
-				sendAccept(conn, p);
-			}
-		}
-		else if(params[0].equals("Sliders"))
-		{
-			sendSliders(conn);
-		}
-		else if(params[0].equals("ChangeToProblemPhase"))
-		{
-			try
-			{
-				ShadowServer.theGame.problems.clear();
-				String session = params[1]+"|"+params[2];
-				Player p = ShadowServer.theGame.players.get(session);
-				if(p!=null && p.isAdmin)
+				if(ShadowServer.doesPlayerExist(params[1]+"|"+params[2]))
 				{
-					String jsonRaw = params[3];
-					JSONArray problemsJson = new JSONArray(jsonRaw);
-					for(int i = 0; i < problemsJson.length(); i++)
-					{
-						JSONObject problemJson = problemsJson.getJSONObject(i);
-						Problem problem = new Problem(problemJson.getString("problemText"));
-						JSONArray optionsJson = problemJson.getJSONArray("optionsText");
-						for(int k = 0; k < optionsJson.length(); k++)
-						{
-							Solution solution = new Solution(optionsJson.getString(k), false);
-							problem.solutions.add(solution);
-						}
-						ShadowServer.theGame.problems.add(problem);
-					}
+					Player thePlayer = ShadowServer.theGame.players.get(params[1]+"|"+params[2]);
+					sendAccept(conn, thePlayer);
 				}
 				else
 				{
-					conn.send("Error|You dont exist or you're not admin.");
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					conn.send("DenySessionID");
 				}
-				ShadowServer.theGame.problemPhase = true;
-				FileSystem.save();
 			}
-			catch(Exception e) {e.printStackTrace();conn.send("Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
-		}
-		else if(params[0].equals("ChangeToVotingPhase"))
-		{
-			String session = params[1]+"|"+params[2];
-			Player p = ShadowServer.theGame.players.get(session);
-			if(p!=null && p.isAdmin)
+			else if(params[0].equals("Signup"))
 			{
-				ShadowServer.theGame.problemPhase = false;
-				FileSystem.save();
+				if(ShadowServer.doesPlayerExist(params[1]))
+				{
+					conn.send("DenySignup|The username has already been taken");
+				}
+				else if(!License.isValid(params[3]))
+				{
+					conn.send("DenySignup|The code you gave was WRONG!");
+				}
+				else
+				{
+					Player p = new Player(params[1], params[2], License.isAdmin(params[3]));
+					System.out.println(params[1]+" created an account with "+params[2]+" as password and the code of "+params[3]);
+					ShadowServer.theGame.players.put(p.sessionId, p);
+					License.usedCode(params[3]);
+					FileSystem.save();
+					conn.send("AcceptSignup");
+					sendAccept(conn, p);
+				}
 			}
-			else
+			else if(params[0].equals("Sliders"))
 			{
-				conn.send("Error|You dont exist or you're not admin.");
+				sendSliders(conn);
 			}
-		}
-		else if(params[0].equals("SetSlider"))
-		{
-			try
+			else if(params[0].equals("ChangeToProblemPhase"))
+			{
+				try
+				{
+					ShadowServer.theGame.problems.clear();
+					String session = params[1]+"|"+params[2];
+					Player p = ShadowServer.theGame.players.get(session);
+					if(p!=null && p.isAdmin)
+					{
+						String jsonRaw = params[3];
+						JSONArray problemsJson = new JSONArray(jsonRaw);
+						for(int i = 0; i < problemsJson.length(); i++)
+						{
+							JSONObject problemJson = problemsJson.getJSONObject(i);
+							Problem problem = new Problem(problemJson.getString("problemText"));
+							JSONArray optionsJson = problemJson.getJSONArray("optionsText");
+							for(int k = 0; k < optionsJson.length(); k++)
+							{
+								Solution solution = new Solution(optionsJson.getString(k), false);
+								problem.solutions.add(solution);
+							}
+							ShadowServer.theGame.problems.add(problem);
+						}
+					}
+					else
+					{
+						conn.send("Error|You dont exist or you're not admin.");
+					}
+					ShadowServer.theGame.problemPhase = true;
+					FileSystem.save();
+				}
+				catch(Exception e) {e.printStackTrace();conn.send("Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
+			}
+			else if(params[0].equals("ChangeToVotingPhase"))
 			{
 				String session = params[1]+"|"+params[2];
 				Player p = ShadowServer.theGame.players.get(session);
 				if(p!=null && p.isAdmin)
 				{
-					int value = Integer.parseInt(params[4]);
-					if(params[3].equals("Wealth"))
-					{
-						ShadowServer.theGame.theEmpire.wealth = value;
-					}
-					else if(params[3].equals("Military"))
-					{
-						ShadowServer.theGame.theEmpire.military = value;
-					}
-					else if(params[3].equals("Consciousness"))
-					{
-						ShadowServer.theGame.theEmpire.consciousness = value;
-					}
-					else if(params[3].equals("Culture"))
-					{
-						ShadowServer.theGame.theEmpire.culture = value;
-					}
-					else if(params[3].equals("Piety"))
-					{
-						ShadowServer.theGame.theEmpire.piety = value;
-					}
-					Collection<WebSocket> connections = getConnections();
-					for(WebSocket socket : connections)
-					{
-						sendSliders(socket);
-					}
+					ShadowServer.theGame.problemPhase = false;
 					FileSystem.save();
 				}
 				else
@@ -217,23 +180,112 @@ class Websockets extends WebSocketServer {
 					conn.send("Error|You dont exist or you're not admin.");
 				}
 			}
-			catch(NumberFormatException e)
+			else if(params[0].equals("SetSlider"))
 			{
-				conn.send("Error|Enter an integer please");
+				try
+				{
+					String session = params[1]+"|"+params[2];
+					Player p = ShadowServer.theGame.players.get(session);
+					if(p!=null && p.isAdmin)
+					{
+						int value = Integer.parseInt(params[4]);
+						if(params[3].equals("Wealth"))
+						{
+							ShadowServer.theGame.theEmpire.wealth = value;
+						}
+						else if(params[3].equals("Military"))
+						{
+							ShadowServer.theGame.theEmpire.military = value;
+						}
+						else if(params[3].equals("Consciousness"))
+						{
+							ShadowServer.theGame.theEmpire.consciousness = value;
+						}
+						else if(params[3].equals("Culture"))
+						{
+							ShadowServer.theGame.theEmpire.culture = value;
+						}
+						else if(params[3].equals("Piety"))
+						{
+							ShadowServer.theGame.theEmpire.piety = value;
+						}
+						Collection<WebSocket> connections = getConnections();
+						for(WebSocket socket : connections)
+						{
+							sendSliders(socket);
+						}
+						FileSystem.save();
+					}
+					else
+					{
+						conn.send("Error|You dont exist or you're not admin.");
+					}
+				}
+				catch(NumberFormatException e)
+				{
+					conn.send("Error|Enter an integer please");
+				}
+				catch(Exception e)
+				{
+					conn.send("Error|"+e.toString());
+				}
 			}
-			catch(Exception e)
+	//		else if(params[0].equals("Problems"))
+	//		{
+	//			sendProblems(conn, p);
+	//		}
+			else if(params[0].equals("ProposeSolution"))
 			{
-				conn.send("Error|"+e.toString());
+				String session = params[1]+"|"+params[2];
+				Player p = ShadowServer.theGame.players.get(session);
+				int problem = Integer.parseInt(params[3]);
+				String text = params[4];
+				if(!p.hasSubmittedSolution)
+				{
+					Problem theProblem = ShadowServer.theGame.problems.get(problem);
+					Solution newSolution = new Solution(text, true);
+					newSolution.whoVotedOnMe.add(p);
+					theProblem.solutions.add(newSolution);
+					broadcast("SolutionProposed|"+problem+"|"+text);
+				}
+			}
+			else if(params[0].equals("Vote"))
+			{
+				String session = params[1]+"|"+params[2];
+				int problem = Integer.parseInt(params[3]);
+				int solution = Integer.parseInt(params[4]);
+				Player p = ShadowServer.theGame.players.get(session);
+				Problem theProblem = ShadowServer.theGame.problems.get(problem);
+				Solution theSolution = theProblem.solutions.get(solution);
+				theSolution.whoVotedOnMe.add(p);
+				
+				JSONArray people = new JSONArray();
+				for(Player votedPlayer : theSolution.whoVotedOnMe)
+				{
+					people.put(votedPlayer);
+				}
+				broadcast("VotedFor|"+problem+"|"+solution+"|"+people.toString());
+			}
+			else if(params[0].equals("Votent"))
+			{
+				String session = params[1]+"|"+params[2];
+				int problem = Integer.parseInt(params[3]);
+				int solution = Integer.parseInt(params[4]);
+				Player p = ShadowServer.theGame.players.get(session);
+				Problem theProblem = ShadowServer.theGame.problems.get(problem);
+				Solution theSolution = theProblem.solutions.get(solution);
+				theSolution.whoVotedOnMe.remove(p);
+				
+				
+				JSONArray people = new JSONArray();
+				for(Player votedPlayer : theSolution.whoVotedOnMe)
+				{
+					people.put(votedPlayer);
+				}
+				broadcast("VotedFor|"+problem+"|"+solution+"|"+people.toString());
 			}
 		}
-//		else if(params[0].equals("Problems"))
-//		{
-//			sendProblems(conn, p);
-//		}
-		else if(params[0].equals("SubmitSolution"))
-		{
-			
-		}
+		catch(Exception e) {e.printStackTrace();conn.send("Error|"+e.toString());}
 	}
 
 	@Override

@@ -56,6 +56,14 @@ class BackendConnection {
 		{
 			populateUserProblemsPhase(params[1]);
 		}
+		if(params[0]=="SolutionProposed")
+		{
+			addProposedSolution(Integer.parseInt(params[1]), params[2]);
+		}
+		if(params[0]=="VotedFor")
+		{
+			votedFor(Integer.parseInt(params[1]), Integer.parseInt(params[2]), params[3])//problem number, solution number, names
+		}
 	}
 
 	onError(evt) {
@@ -94,8 +102,17 @@ class BackendConnection {
 	{
 		this.send("ChangeToVotingPhase|"+cookies.getSessionId());
 	}
-	submitSolution(solutionText)
+	proposeSolution(problem, solutionText)
 	{
-		this.send("SubmitSolution|"+cookies.getSessionId()+"|"+solutionText);
+		solutionText = solutionText.replace("|","");
+		this.send("ProposeSolution|"+cookies.getSessionId()+"|"+problem+"|"+solutionText);
+	}
+	voteFor(problem, solution)
+	{
+		this.send("Vote|"+cookies.getSessionId()+"|"+problem+"|"+solution);
+	}
+	VotentFor(problem, solution)
+	{
+		this.send("Votent|"+cookies.getSessionId()+"|"+problem+"|"+solution);
 	}
 }
