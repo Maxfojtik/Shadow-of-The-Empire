@@ -1,0 +1,40 @@
+
+.tabs {
+	border: 1px solid black;
+	overflow: hidden;
+	display: inline-block;
+	cursor: pointer;
+}
+.tablinks {
+	border: 0px;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tabs button {
+	background-color: #360000;
+	border: none;
+	border-radius: 0px;
+	outline: none;
+	padding: 14px 16px;
+	transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tabs button:hover {
+	background-color: #361717;
+}
+
+/* Create an active/current tablink class */
+.tabs button.active {
+	background-color: #361717;
+}
+
+/* Style the tab content */
+.tab-content {
+  display: none;
+  width: 80%;
+  margin: 0px auto;
+  padding: 6px 12px;
+  border-top: none;
+}
+

@@ -1,0 +1,19 @@
+
+#admin-set-sliders-table {
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: 100px 40px 50px;
+	width: 190px;
+	/*grid-template-areas:
+		". . ."
+		". . ."
+		". . ."
+		". . ."
+		". . .";*/
+}
+
+button.admin-button {
+	height: 22px;
+	padding: 3px 10px;
+}
+
