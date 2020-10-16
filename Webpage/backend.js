@@ -58,7 +58,7 @@ class BackendConnection {
 		}
 		if(params[0]=="SolutionProposed")
 		{
-			addProposedSolution(Integer.parseInt(params[1]), params[2]);
+			addProposedSolution(Integer.parseInt(params[1]), params[2], params[3]);//title, text
 		}
 		if(params[0]=="VotedFor")
 		{

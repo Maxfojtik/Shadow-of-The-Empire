@@ -42,6 +42,7 @@ class Websockets extends WebSocketServer {
 			Problem problem = ShadowServer.theGame.problems.get(i);
 			JSONObject problemJson = new JSONObject();
 			problemJson.put("problemText", problem.text);
+			problemJson.put("problemTitle", problem.title);
 			JSONArray proposedSolutions = new JSONArray();
 			JSONArray givenSolutions = new JSONArray();
 			for(int j = 0; j < problem.solutions.size(); j++)
@@ -51,17 +52,21 @@ class Websockets extends WebSocketServer {
 				{
 					JSONObject solutionJson = new JSONObject();
 					solutionJson.put("text", s.text);
+					solutionJson.put("title", s.title);
 					JSONArray solutionVotes = new JSONArray();
 					for(int k = 0; k < s.whoVotedOnMe.size(); k++)
 					{
 						solutionVotes.put(s.whoVotedOnMe.get(k));
 					}
 					solutionJson.put("Votes", solutionVotes);
-					proposedSolutions.put(s);
+					proposedSolutions.put(solutionJson);
 				}
 				else
 				{
-					givenSolutions.put(s.text);
+					JSONObject givenSolution = new JSONObject();
+					givenSolution.put("title", s.title);
+					givenSolution.put("text", s.text);
+					givenSolutions.put(givenSolution);
 				}
 			}
 			problemJson.put("givenSolutions", givenSolutions);
@@ -254,7 +259,7 @@ class Websockets extends WebSocketServer {
 						Solution newSolution = new Solution(title, text, true);
 						newSolution.whoVotedOnMe.add(p);
 						theProblem.solutions.add(newSolution);
-						broadcast("SolutionProposed|"+problem+"|"+text);
+						broadcast("SolutionProposed|"+problem+"|"+title+"|"+text);
 					}
 					FileSystem.save();
 				}
