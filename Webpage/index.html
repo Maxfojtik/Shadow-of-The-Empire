@@ -47,15 +47,15 @@
 			<div id="sliders-screen" class="screen">
 				<div class="slider-main">
 					<h2>Wealth</h2>
-					<input type="range" min="1" max="11" value="6" class="slider" id="wealth-slider">
+					<input type="range" min="1" max="11" value="6" class="slider" id="wealth-slider" disabled>
 					<h2>Military</h2>
-					<input type="range" min="1" max="11" value="6" class="slider" id="military-slider">
+					<input type="range" min="1" max="11" value="6" class="slider" id="military-slider" disabled>
 					<h2>Consciousness</h2>
-					<input type="range" min="1" max="11" value="6" class="slider" id="consciousness-slider">
+					<input type="range" min="1" max="11" value="6" class="slider" id="consciousness-slider" disabled>
 					<h2>Culture</h2>
-					<input type="range" min="1" max="11" value="6" class="slider" id="culture-slider">
+					<input type="range" min="1" max="11" value="6" class="slider" id="culture-slider" disabled>
 					<h2>Piety</h2>
-					<input type="range" min="1" max="11" value="6" class="slider" id="piety-slider">
+					<input type="range" min="1" max="11" value="6" class="slider" id="piety-slider" disabled>
 					<p>Updates automatically</p>
 				</div>
 			</div>
@@ -92,10 +92,14 @@
 
 				<hr><br>
 
-				<div id="tab-button-holder" class="tabs">
-				</div>
+				<div id="tab-button-holder" class="tabs"></div>
 
+				<div id="tabs-content-holder"></div>
 			</div>
+		</div>
+
+		<div class="footer">
+			<h3>Bored to Death</h3>
 		</div>
 	</body>
 
@@ -104,25 +108,41 @@
 		<div id="template-admin-problem">
 			<div class="admin-problem">
 				<label>Problem</label><br>
+				<textarea class="admin-problem-description" rows="1" cols="70"></textarea><br>
 				<textarea class="admin-problem-description" rows="8" cols="70"></textarea><br>
 				<label>Option 1</label><br>
+				<textarea class="admin-problem-description" rows="1" cols="70"></textarea><br>
 				<textarea class="admin-problem-description" rows="6" cols="70"></textarea><br>
 				<label>Option 2</label><br>
+				<textarea class="admin-problem-description" rows="1" cols="70"></textarea><br>
 				<textarea class="admin-problem-description" rows="6" cols="70"></textarea><br>
 				<label>Option 3 (Leave blank for 2 options)</label><br>
+				<textarea class="admin-problem-description" rows="1" cols="70"></textarea><br>
 				<textarea class="admin-problem-description" rows="6" cols="70"></textarea><br><br>
 			</div>
 		</div>
 
-		<div id="template-tablinks">
-			<button class="tablinks" onclick="openTab(event, 'Problem1')"></button>
-		</div>
+		<button class="tablinks" id="template-tablinks"></button>
 
-		<div id="template-problem-container">
-			<div class="problem-container">
-				<p class="problem-text"></p>
-				<div class="given-solutions"></div>
+		<div class="tab-content" id="template-problem-container">
+			<h2>Problem</h2>
+			<p class="problem-text"></p>
+			<hr class="partial-break">
+			<h3>Given Solutions</h3>
+			<div class="given-solutions"></div>
+			<div class="proposed-solutions-container">
+				<hr class="partial-break">
+				<h3>Proposed Solutions</h3>
 				<div class="proposed-solutions"></div>
+			</div>
+			<div class="propose-self-solution-container">
+				<hr class="partial-break">
+				<h3>Propose a solution</h3>
+				<label>Title</label>
+				<textarea class="proposed-input" rows="1" cols="70"></textarea><br>
+				<label>Solution</label>
+				<textarea class="proposed-input" rows="6" cols="70"></textarea><br>
+				<button>Submit</button>
 			</div>
 		</div>
 

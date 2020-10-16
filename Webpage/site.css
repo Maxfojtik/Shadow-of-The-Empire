@@ -1,5 +1,6 @@
 
 body {
+	min-width: 1080px;
 	background: #850000;
 	margin: 0px;
 	font-family: 'Aclonica', Helvetica, sans-serif;
@@ -20,6 +21,7 @@ body {
 	color: lightgray;
 
 	padding-bottom: 50px;
+	padding-top: 30px;
 }
 
 button {
@@ -38,11 +40,6 @@ button:hover {
 	cursor: pointer;
 }
 
-button.admin-button {
-	height: 22px;
-	padding: 3px 10px;
-}
-
 input {
 	background-color: lightgray;
 }
@@ -56,6 +53,10 @@ hr {
     background: gray;
     background-image: linear-gradient(to right, #360000, gray, #360000);
     margin: 0px 6%;
+}
+hr.partial-break {
+	height: 1px;
+    background-image: linear-gradient(to right, #360000, #844, #360000);
 }
 
 .vertical-divider {
