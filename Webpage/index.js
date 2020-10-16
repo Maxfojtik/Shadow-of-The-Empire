@@ -124,19 +124,56 @@ function populateUserProblemsPhase(dataString) {
 	problems = dataJSON.problems
 	hasSubmitted = dataJSON.hasSubmitted
 	problems.forEach( function( problem, index ) {
+		index++
+		console.log("Generating problem "+index)
 		// Button for tab
-		var problemTab = $('#template-tablinks').html("Problem "+index)
+		var problemTab = $('#template-tablinks').clone().removeClass("#template-tablinks")
+		console.log(problemTab)
 		problemTab.click( function() { 
-			$(".tabcontent").hide()
-			$(".tabcontent").removeClass("active")
-			$(".tablinks").removeClass("active")
-			this.show()
-			this.addClass("active") 
+			$("#user-screen").find(".tab-content").hide()
+			$("#user-screen").find(".tab-content").removeClass("active")
+			$("#user-screen").find(".tablinks").removeClass("active")
+			$("#user-screen").find("#problem-"+index).show()
+			$(this).show()
+			$(this).addClass("active") 
 		})
+		problemTab.html("Problem "+index)
 		$('#tab-button-holder').append(problemTab)
 		// Problem container
+		var problemContent = $('#template-problem-container').clone().removeClass("#template-problem-container")
+		$('#tabs-content-holder').append(problemContent)
+		problemContent.attr('id', 'problem-'+index)
+		// Add problem text
+		problemContent.find(".problem-text").text(problem["problemText"])
+		// Add given solutions text
+		problem["givenSolutions"].forEach( function(solution) {
+			problemContent.find(".given-solutions").append($('<p></p>').text(solution))
+		})
+		// Add proposed solutions
+		if (problem["proposedSolutions"].length > 0) {
+			problem["proposedSolutions"].forEach( function(solution) {
+				problemContent.find(".given-solutions").append($('<p></p>').text(solution["text"]))
+			})
+		}
+		else {
+			problemContent.find(".proposed-solutions-container").hide()
+		}
+		// Hide your input or don't
+		if (hasSubmitted) {
+			$('.propose-self-solution-container').hide()
+		}
+		else {
+			problemContent.find('.propose-self-solution-container').find("button").click( function() {
+				// Send it
+				connection.proposeSolution(index-1, problemContent.find('.proposed-input').text())
+				// Remove the options
+				$('.propose-self-solution-container').hide();
+			})
+		}
 	})
 }
+
+
 
 $(document).ready(function(){
 	setTimeout(function(){
@@ -147,3 +184,4 @@ $(document).ready(function(){
 		}
 	}, 1000);
 });
+
