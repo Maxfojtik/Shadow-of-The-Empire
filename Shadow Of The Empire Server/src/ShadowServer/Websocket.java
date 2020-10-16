@@ -147,11 +147,12 @@ class Websockets extends WebSocketServer {
 						for(int i = 0; i < problemsJson.length(); i++)
 						{
 							JSONObject problemJson = problemsJson.getJSONObject(i);
-							Problem problem = new Problem(problemJson.getString("problemText"));
-							JSONArray optionsJson = problemJson.getJSONArray("optionsText");
-							for(int k = 0; k < optionsJson.length(); k++)
+							Problem problem = new Problem(problemJson.getString("problemText"), problemJson.getString("problemText"));
+							JSONArray solutionsJson = problemJson.getJSONArray("solutions");
+							for(int k = 0; k < solutionsJson.length(); k++)
 							{
-								Solution solution = new Solution(optionsJson.getString(k), false);
+								JSONObject solutionJson = solutionsJson.getJSONObject(k);
+								Solution solution = new Solution(solutionJson.getString("text"), solutionJson.getString("title"), false);
 								problem.solutions.add(solution);
 							}
 							ShadowServer.theGame.problems.add(problem);
@@ -236,17 +237,26 @@ class Websockets extends WebSocketServer {
 	//		}
 			else if(params[0].equals("ProposeSolution"))
 			{
-				String session = params[1]+"|"+params[2];
-				Player p = ShadowServer.theGame.players.get(session);
-				int problem = Integer.parseInt(params[3]);
-				String text = params[4];
-				if(!p.hasSubmittedSolution)
+				if(params.length!=5)
 				{
-					Problem theProblem = ShadowServer.theGame.problems.get(problem);
-					Solution newSolution = new Solution(text, true);
-					newSolution.whoVotedOnMe.add(p);
-					theProblem.solutions.add(newSolution);
-					broadcast("SolutionProposed|"+problem+"|"+text);
+					conn.send("Error|Please enter more information");
+				}
+				else
+				{
+					String session = params[1]+"|"+params[2];
+					Player p = ShadowServer.theGame.players.get(session);
+					int problem = Integer.parseInt(params[3]);
+					String title = params[4];
+					String text = params[5];
+					if(!p.hasSubmittedSolution)
+					{
+						Problem theProblem = ShadowServer.theGame.problems.get(problem);
+						Solution newSolution = new Solution(title, text, true);
+						newSolution.whoVotedOnMe.add(p);
+						theProblem.solutions.add(newSolution);
+						broadcast("SolutionProposed|"+problem+"|"+text);
+					}
+					FileSystem.save();
 				}
 			}
 			else if(params[0].equals("Vote"))
@@ -264,6 +274,7 @@ class Websockets extends WebSocketServer {
 				{
 					people.put(votedPlayer);
 				}
+				FileSystem.save();
 				broadcast("VotedFor|"+problem+"|"+solution+"|"+people.toString());
 			}
 			else if(params[0].equals("Votent"))
@@ -282,6 +293,7 @@ class Websockets extends WebSocketServer {
 				{
 					people.put(votedPlayer);
 				}
+				FileSystem.save();
 				broadcast("VotedFor|"+problem+"|"+solution+"|"+people.toString());
 			}
 		}

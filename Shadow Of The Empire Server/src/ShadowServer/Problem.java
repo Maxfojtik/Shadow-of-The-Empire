@@ -17,18 +17,22 @@ public class Problem implements Serializable
 		private static final long serialVersionUID = 1L;
 //		int votesFor = 0;
 		String text = "";
+		String title = "";
 		boolean playerSubmitted = false;
 		ArrayList<Player> whoVotedOnMe = new ArrayList<>();
-		public Solution(String t, boolean player)
+		public Solution(String tex, String titl, boolean player)
 		{
-			text = t;
+			text = tex;
+			title = titl;
 			playerSubmitted = player;
 		}
 	}
 	ArrayList<Solution> solutions = new ArrayList<>();
 	String text = "";
-	public Problem(String t)
+	String title = "";
+	public Problem(String tex, String titl)
 	{
-		text = t;
+		text = tex;
+		title = titl;
 	}
 }

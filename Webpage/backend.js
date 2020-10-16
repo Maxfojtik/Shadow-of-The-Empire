@@ -102,17 +102,17 @@ class BackendConnection {
 	{
 		this.send("ChangeToVotingPhase|"+cookies.getSessionId());
 	}
-	proposeSolution(problem, solutionText)
+	proposeSolution(problem, solutionTitle, solutionText)
 	{
 		solutionText = solutionText.replace("|","");
-		this.send("ProposeSolution|"+cookies.getSessionId()+"|"+problem+"|"+solutionText);
+		this.send("ProposeSolution|"+cookies.getSessionId()+"|"+problem+"|"+solutionTitle+"|"+solutionText);
 	}
-	voteFor(problem, solution)
+	voteFor(problem, solutionNumber)
 	{
-		this.send("Vote|"+cookies.getSessionId()+"|"+problem+"|"+solution);
+		this.send("Vote|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
 	}
-	VotentFor(problem, solution)
+	VotentFor(problem, solutionNumber)
 	{
-		this.send("Votent|"+cookies.getSessionId()+"|"+problem+"|"+solution);
+		this.send("Votent|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
 	}
 }
