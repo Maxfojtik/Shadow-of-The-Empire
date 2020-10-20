@@ -64,6 +64,10 @@ class BackendConnection {
 		{
 			votedFor(Integer.parseInt(params[1]), Integer.parseInt(params[2]), params[3])//problem number, solution number, names
 		}
+		if(params[0]=="PopulateUserVotingPhase")
+		{
+			populateUserVotingPhase(params[1]);
+		}
 	}
 
 	onError(evt) {
