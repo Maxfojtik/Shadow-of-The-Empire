@@ -80,12 +80,12 @@ class BackendConnection {
 		this.websocket.send(message);
 		console.log("->: " + message);
 	}
-	
+
 	sendSignUp(sessionId)
 	{
 		this.send("Signup|"+sessionId);
 	}
-	
+
 	sendSessionId(sessionId)
 	{
 		this.send("SetSessionId|"+sessionId);
