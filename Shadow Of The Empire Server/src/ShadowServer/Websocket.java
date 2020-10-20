@@ -52,10 +52,14 @@ class Websockets extends WebSocketServer {
 				Solution sol = problem.solutions.get(k);
 				solJson.put("text", sol.text);
 				solJson.put("title", sol.title);
-				JSONArray peopleJson = new JSONArray();
-				for(int l = 0; l < sol.whoVotedOnMe.size(); l++)
+				if(sol.playerSubmitted!=null)
 				{
-					peopleJson.put(sol.whoVotedOnMe.get(l).username);
+					solJson.put("who", sol.playerSubmitted.username);
+				}
+				JSONArray peopleJson = new JSONArray();
+				for(int l = 0; l < sol.whoSignedOnMe.size(); l++)
+				{
+					peopleJson.put(sol.whoSignedOnMe.get(l).username);
 				}
 				solJson.put("votes", peopleJson);
 			}
@@ -68,7 +72,7 @@ class Websockets extends WebSocketServer {
 	{
 		JSONObject json = new JSONObject();
 		JSONArray problems = new JSONArray();
-		json.put("hasSummited", p.hasSubmittedSolution);
+		json.put("hasTakenAction", p.hasSubmittedSolution || p.mySigniture==null);
 		for(int i = 0; i < ShadowServer.theGame.problems.size(); i++)
 		{
 			Problem problem = ShadowServer.theGame.problems.get(i);
@@ -80,17 +84,18 @@ class Websockets extends WebSocketServer {
 			for(int j = 0; j < problem.solutions.size(); j++)
 			{
 				Solution s = problem.solutions.get(j);
-				if(s.playerSubmitted)
+				if(s.playerSubmitted != null)
 				{
 					JSONObject solutionJson = new JSONObject();
 					solutionJson.put("text", s.text);
 					solutionJson.put("title", s.title);
+					solutionJson.put("who", s.playerSubmitted.username);
 					JSONArray solutionVotes = new JSONArray();
-					for(int k = 0; k < s.whoVotedOnMe.size(); k++)
+					for(int k = 0; k < s.whoSignedOnMe.size(); k++)
 					{
-						solutionVotes.put(s.whoVotedOnMe.get(k));
+						solutionVotes.put(s.whoSignedOnMe.get(k).username);
 					}
-					solutionJson.put("Votes", solutionVotes);
+					solutionJson.put("votes", solutionVotes);
 					proposedSolutions.put(solutionJson);
 				}
 				else
@@ -189,7 +194,7 @@ class Websockets extends WebSocketServer {
 							for(int k = 0; k < solutionsJson.length(); k++)
 							{
 								JSONObject solutionJson = solutionsJson.getJSONObject(k);
-								Solution solution = new Solution(solutionJson.getString("text"), solutionJson.getString("title"), false);
+								Solution solution = new Solution(solutionJson.getString("text"), solutionJson.getString("title"), null);
 								problem.solutions.add(solution);
 							}
 							ShadowServer.theGame.problems.add(problem);
@@ -288,50 +293,72 @@ class Websockets extends WebSocketServer {
 					if(!p.hasSubmittedSolution)
 					{
 						Problem theProblem = ShadowServer.theGame.problems.get(problem);
-						Solution newSolution = new Solution(title, text, true);
-						newSolution.whoVotedOnMe.add(p);
+						Solution newSolution = new Solution(title, text, p);
+//						newSolution.whoVotedOnMe.add(p);
 						theProblem.solutions.add(newSolution);
-						broadcast("SolutionProposed|"+problem+"|"+title+"|"+text);
+						broadcast("SolutionProposed|"+problem+"|"+title+"|"+text+"|"+p.username);
+						p.hasSubmittedSolution = true;
 					}
 					FileSystem.save();
 				}
 			}
-			else if(params[0].equals("Vote"))
+			else if(params[0].equals("Sign"))
 			{
 				String session = params[1]+"|"+params[2];
 				int problem = Integer.parseInt(params[3]);
 				int solution = Integer.parseInt(params[4]);
 				Player p = ShadowServer.theGame.players.get(session);
-				Problem theProblem = ShadowServer.theGame.problems.get(problem);
-				Solution theSolution = theProblem.solutions.get(solution);
-				theSolution.whoVotedOnMe.add(p);
-				
-				JSONArray people = new JSONArray();
-				for(Player votedPlayer : theSolution.whoVotedOnMe)
+				if(!p.hasSubmittedSolution)
 				{
-					people.put(votedPlayer);
+					if(p.mySigniture==null)
+					{
+						Problem theProblem = ShadowServer.theGame.problems.get(problem);
+						Solution theSolution = theProblem.solutions.get(solution);
+						theSolution.whoSignedOnMe.add(p);
+						FileSystem.save();
+						
+						JSONArray people = new JSONArray();
+						for(Player votedPlayer : theSolution.whoSignedOnMe)
+						{
+							people.put(votedPlayer);
+						}
+						broadcast("SignedFor|"+problem+"|"+solution+"|"+people.toString());
+					}
+					else
+					{
+						conn.send("Error|You have already cast a signiture");
+					}
 				}
-				FileSystem.save();
-				broadcast("VotedFor|"+problem+"|"+solution+"|"+people.toString());
+				else
+				{
+					conn.send("Error|You can't sign on a solution if you submitted one, also stop cheating.");
+				}
 			}
-			else if(params[0].equals("Votent"))
+			else if(params[0].equals("Signnt"))
 			{
 				String session = params[1]+"|"+params[2];
 				int problem = Integer.parseInt(params[3]);
 				int solution = Integer.parseInt(params[4]);
 				Player p = ShadowServer.theGame.players.get(session);
-				Problem theProblem = ShadowServer.theGame.problems.get(problem);
-				Solution theSolution = theProblem.solutions.get(solution);
-				theSolution.whoVotedOnMe.remove(p);
-				
-				
-				JSONArray people = new JSONArray();
-				for(Player votedPlayer : theSolution.whoVotedOnMe)
+				if(p.mySigniture!=null)
 				{
-					people.put(votedPlayer);
+					Problem theProblem = ShadowServer.theGame.problems.get(problem);
+					Solution theSolution = theProblem.solutions.get(solution);
+					theSolution.whoSignedOnMe.remove(p);
+					FileSystem.save();
+					
+					
+					JSONArray people = new JSONArray();
+					for(Player votedPlayer : theSolution.whoSignedOnMe)
+					{
+						people.put(votedPlayer);
+					}
+					broadcast("SignedFor|"+problem+"|"+solution+"|"+people.toString());
 				}
-				FileSystem.save();
-				broadcast("VotedFor|"+problem+"|"+solution+"|"+people.toString());
+				else
+				{
+					conn.send("Error|You can't Signnt because you haven't signed");
+				}
 			}
 		}
 		catch(Exception e) {e.printStackTrace();conn.send("Error|"+e.toString());}

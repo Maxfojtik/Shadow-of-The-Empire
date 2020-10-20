@@ -58,11 +58,11 @@ class BackendConnection {
 		}
 		if(params[0]=="SolutionProposed")
 		{
-			addProposedSolution(Integer.parseInt(params[1]), params[2], params[3]);//title, text
+			addProposedSolution(Integer.parseInt(params[1]), params[2], params[3], params[4]);//title, text
 		}
-		if(params[0]=="VotedFor")
+		if(params[0]=="SignedFor")
 		{
-			votedFor(Integer.parseInt(params[1]), Integer.parseInt(params[2]), params[3])//problem number, solution number, names
+			signedFor(Integer.parseInt(params[1]), Integer.parseInt(params[2]), params[3])//problem number, solution number, names
 		}
 		if(params[0]=="PopulateUserVotingPhase")
 		{
@@ -111,12 +111,12 @@ class BackendConnection {
 		solutionText = solutionText.replace("|","");
 		this.send("ProposeSolution|"+cookies.getSessionId()+"|"+problem+"|"+solutionTitle+"|"+solutionText);
 	}
-	voteFor(problem, solutionNumber)
+	signFor(problem, solutionNumber)
 	{
-		this.send("Vote|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
+		this.send("Sign|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
 	}
-	VotentFor(problem, solutionNumber)
+	signntFor(problem, solutionNumber)
 	{
-		this.send("Votent|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
+		this.send("Signnt|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
 	}
 }
