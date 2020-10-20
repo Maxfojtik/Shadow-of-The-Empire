@@ -18,9 +18,10 @@ public class Problem implements Serializable
 //		int votesFor = 0;
 		String text = "";
 		String title = "";
-		boolean playerSubmitted = false;
+		Player playerSubmitted = null;
+		ArrayList<Player> whoSignedOnMe = new ArrayList<>();
 		ArrayList<Player> whoVotedOnMe = new ArrayList<>();
-		public Solution(String tex, String titl, boolean player)
+		public Solution(String tex, String titl, Player player)
 		{
 			text = tex;
 			title = titl;
