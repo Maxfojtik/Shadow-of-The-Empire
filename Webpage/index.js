@@ -39,11 +39,11 @@ function acceptSignIn(username, password, isAdmin, isInProblemPhase) {
     }
     if (isProblemPhase) {
         $('#voting-phase').hide();
-        $('#problems-phase').show();
+        $('#problem-phase').show();
     }
     else {
         $('#voting-phase').show();
-        $('#problems-phase').hide();
+        $('#problem-phase').hide();
     }
 }
 // Called by backend
@@ -132,8 +132,8 @@ function changeToVotingPhase() {
 function populateUserProblemsPhase(dataString) {
     dataJSON = JSON.parse(dataString)
     problems = dataJSON.problems
-    hasSubmitted = dataJSON.hasSubmitted
-    console.log("hasSubmitted: "+hasSubmitted)
+    hasTakenAction = dataJSON.hasTakenAction // Has submitted solution or signed
+    console.log("hasTakenAction: "+hasTakenAction)
     problems.forEach( function( problem, index ) {
         index++
         // Button for tab
@@ -168,14 +168,14 @@ function populateUserProblemsPhase(dataString) {
         // Add proposed solutions
         if (problem["proposedSolutions"].length > 0) {
             problem["proposedSolutions"].forEach( function(solution) {
-                addProposedSolution(index-1, solution["title"], solution["text"], solution["votes"])
+                addProposedSolution(index-1, solution["title"], solution["text"], solution["votes"], solution.who)
             })
         }
         else {
             problemContent.find(".proposed-solutions-container").hide()
         }
         // Hide your input or don't
-        if (hasSubmitted) {
+        if (hasTakenAction) {
             $('.propose-self-solution-container').hide()
         }
         else {
@@ -194,7 +194,7 @@ function populateUserProblemsPhase(dataString) {
     $('#tab-button-problem-1').click();
 }
 
-function addProposedSolution(problemNum, title, text, votes) {
+function addProposedSolution(problemNum, title, text, votes, proposedBy) {
     let problemContainer = $('#problem-'+(problemNum+1))
     let userVotedFor = votes.includes(cookies.getUsername())
 
@@ -206,13 +206,17 @@ function addProposedSolution(problemNum, title, text, votes) {
         class: "proposed-solution-header-div"
     })
 
-    solutionHeaderDiv.append($('<p/>').text("Proposed by: "+proposedBy))
+    solutionHeaderDiv.append($('<p/>',{style: "margin-left: 20px; text-align: left"}).text("Proposed by: "+proposedBy))
     solutionHeaderDiv.append($('<h2></h2>').text(title))
+
+    newSolutionDiv.append(solutionHeaderDiv)
     newSolutionDiv.append($('<p></p>').text(text))
 
-    newSolutionDiv.append($('<p/>', {
-        class: "solution-votes"
-    }).text("Signatures: "+votes.join(", ")))
+    if (votes.length > 0) {
+        newSolutionDiv.append($('<p/>', {
+            class: "solution-votes"
+        }).text("Signatures: "+votes.join(", ")))
+    }
 
     problemContainer.find('.proposed-solutions').append(newSolutionDiv)
     problemContainer.find(".proposed-solutions-container").show() // In case it's currently hidden

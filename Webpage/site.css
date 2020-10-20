@@ -94,5 +94,5 @@ hr.partial-break {
 }
 .proposed-solution-header-div {
 	display: grid;
-	grid-template-columns: 20% 80% 20%
+	grid-template-columns: 25% 50% 25%
 }
