@@ -30,8 +30,40 @@ class Websockets extends WebSocketServer {
 		{
 			sendProblems(conn, p);
 		}
+		if(!p.isAdmin && !ShadowServer.theGame.problemPhase)
+		{
+			sendPopulateUserVotingPhase(conn, p);
+		}
 	}
 	
+	static void sendPopulateUserVotingPhase(WebSocket conn, Player p)
+	{
+		JSONArray json = new JSONArray();
+		for(int i = 0; i < ShadowServer.theGame.problems.size(); i++)
+		{
+			JSONObject problemJson = new JSONObject();
+			Problem problem = ShadowServer.theGame.problems.get(i);
+			problemJson.put("text", problem.text);
+			problemJson.put("title", problem.title);
+			JSONArray solutionsJson = new JSONArray();
+			for(int k = 0; k < problem.solutions.size(); k++)
+			{
+				JSONObject solJson = new JSONObject();
+				Solution sol = problem.solutions.get(k);
+				solJson.put("text", sol.text);
+				solJson.put("title", sol.title);
+				JSONArray peopleJson = new JSONArray();
+				for(int l = 0; l < sol.whoVotedOnMe.size(); l++)
+				{
+					peopleJson.put(sol.whoVotedOnMe.get(l).username);
+				}
+				solJson.put("votes", peopleJson);
+			}
+			problemJson.put("solutions",solutionsJson);
+			json.put(problemJson);
+		}
+		conn.send("PopulateUserVotingPhase|"+json.toString());
+	}
 	static void sendProblems(WebSocket conn, Player p)
 	{
 		JSONObject json = new JSONObject();
@@ -242,7 +274,7 @@ class Websockets extends WebSocketServer {
 	//		}
 			else if(params[0].equals("ProposeSolution"))
 			{
-				if(params.length!=5)
+				if(params.length!=6)
 				{
 					conn.send("Error|Please enter more information");
 				}
