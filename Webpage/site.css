@@ -22,6 +22,8 @@ body {
 
 	padding-bottom: 50px;
 	padding-top: 30px;
+
+	box-shadow: 0 0 5px 0 #2a0000;
 }
 
 button {
@@ -45,6 +47,7 @@ input {
 }
 textarea {
 	background-color: lightgray;
+	border-radius: 3px;
 }
 
 hr {
@@ -73,4 +76,23 @@ hr.partial-break {
 }
 #error-screen {
 	display: none;
+}
+
+.solution {
+	border: 1px solid #270000;
+	border-radius: 6px;
+	background-color: #3a0000;
+	margin-bottom: 10px;
+}
+.voted-solution {
+	border: 1px solid gold;
+}
+
+.solution-votes {
+	text-align: left;
+	margin-left: 20px;
+}
+.proposed-solution-header-div {
+	display: grid;
+	grid-template-columns: 20% 80% 20%
 }
