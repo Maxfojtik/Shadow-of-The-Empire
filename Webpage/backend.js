@@ -58,7 +58,7 @@ class BackendConnection {
 		}
 		if(params[0]=="SolutionProposed")
 		{
-			addProposedSolution(parseInt(params[1]), params[2], params[3], params[4]);//title, text
+			addProposedSolution(parseInt(params[1]), params[2], params[3], [], params[4]);//title, text
 		}
 		if(params[0]=="SignedFor")
 		{

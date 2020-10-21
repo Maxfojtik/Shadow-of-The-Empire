@@ -6,7 +6,7 @@ var admin = false;
 var isProblemPhase = false;
 
 console.log("Hmmm." + 
-    "\nMaybe you shouldn't be poking around here :/." +
+    "\nMaybe you shouldn't be poking around here :/" +
     "\nWe can't guarantee this won't break things." +
     "\nHopefully you're not trying to cheat in a game which is just for fun anyway."
     )
@@ -127,9 +127,12 @@ function changeToVotingPhase() {
     $('#problems-phase').hide();
 }
 
-// User
+// USER PHASE
 
 function populateUserProblemsPhase(dataString) {
+    $('#voting-phase-user').hide()
+    $('#problem-phase').show()
+    // TODO show problems phase and hide voting phase, then clear problems phase
     dataJSON = JSON.parse(dataString)
     problems = dataJSON.problems
     hasTakenAction = dataJSON.hasTakenAction // Has submitted solution or signed
@@ -137,7 +140,7 @@ function populateUserProblemsPhase(dataString) {
     problems.forEach( function( problem, index ) {
         index++
         // Button for tab
-        var problemTab = $('#template-tablinks').clone().removeClass("#template-tablinks")
+        var problemTab = $('#template-zone').find('#template-tablinks').clone().removeClass("#template-tablinks")
         problemTab.attr('id', 'tab-button-problem-'+index)
         problemTab.click( function() { 
             $("#user-screen").find(".tab-content").hide()
@@ -168,7 +171,7 @@ function populateUserProblemsPhase(dataString) {
         // Add proposed solutions
         if (problem["proposedSolutions"].length > 0) {
             problem["proposedSolutions"].forEach( function(solution) {
-                addProposedSolution(index-1, solution["title"], solution["text"], solution["votes"], solution.who)
+                addProposedSolution(index-1, solution["title"], solution["text"], solution["signatures"], solution.who)
             })
         }
         else {
@@ -183,6 +186,7 @@ function populateUserProblemsPhase(dataString) {
                 if (confirm('Are you sure you would like to propose this solution?' +
                     '\nThis consumes your vote/propose action and cannot be undone')) {
                     // Send it
+                    console.log("Proposing solution: "+$(this).parent().find('textarea:eq(0)').val()+" | "+$(this).parent().find('textarea:eq(1)').val())
                     connection.proposeSolution(index-1, $(this).parent().find('textarea:eq(0)').val(), $(this).parent().find('textarea:eq(1)').val())
                     // Remove the options
                     $('.propose-self-solution-container').hide();
@@ -194,12 +198,13 @@ function populateUserProblemsPhase(dataString) {
     $('#tab-button-problem-1').click();
 }
 
-function addProposedSolution(problemNum, title, text, votes, proposedBy) {
+function addProposedSolution(problemNum, title, text, signatures, proposedBy) {
     let problemContainer = $('#problem-'+(problemNum+1))
-    let userVotedFor = votes.includes(cookies.getUsername())
+    let userVotedFor = signatures.includes(cookies.getUsername())
+    let userProposed = proposedBy === cookies.getUsername()
 
     let newSolutionDiv = $('<div/>', {
-        class: "proposed-solution solution voted-solution"
+        class: "proposed-solution solution" + (userVotedFor || userProposed ? " voted-solution" : "")
     })
 
     solutionHeaderDiv = $('<div/>', {
@@ -212,14 +217,58 @@ function addProposedSolution(problemNum, title, text, votes, proposedBy) {
     newSolutionDiv.append(solutionHeaderDiv)
     newSolutionDiv.append($('<p></p>').text(text))
 
-    if (votes.length > 0) {
+    if (signatures.length > 0) {
         newSolutionDiv.append($('<p/>', {
-            class: "solution-votes"
-        }).text("Signatures: "+votes.join(", ")))
+            class: "solution-signatures"
+        }).text(getSignaturesText(signatures)))
     }
+
+    newSolutionDiv.click( function() {
+        if ($(this).find('.solution-signatures').text().includes(cookies.getUsername())) {
+            connection.signntFor(problemNum, $(this).index())
+            $(this).removeClass("voted-solution")
+            $('.propose-self-solution-container').show();
+        }
+        else {
+            connection.signFor(problemNum, $(this).index())
+        }
+    })
 
     problemContainer.find('.proposed-solutions').append(newSolutionDiv)
     problemContainer.find(".proposed-solutions-container").show() // In case it's currently hidden
+}
+
+function getSignaturesText(signatures) {
+    return "Signatures: "+signatures.join(", ")
+}
+
+// Called by backend, updates when a signature is added/removed from a problem
+function signedFor(problemNum, solutionNum, signatures) {
+    signatures = JSON.parse(signatures)
+    let problemContainer = $('#problem-'+(problemNum+1))
+    let solutionContainer = problemContainer.find(".proposed-solutions").children().eq(solutionNum)
+    
+    // If the text currently doesn't exist
+    if (solutionContainer.find('.solution-signatures').length === 0) {
+        if (signatures.length >= 0) {
+            solutionContainer.append($('<p/>', {
+                class: "solution-signatures"
+            }).text(getSignaturesText(signatures)))
+        }
+    }
+    else {
+        if (signatures.length >= 0) {
+            solutionContainer.find('.solution-signatures').text(getSignaturesText(signatures))
+        }
+        else {
+            solutionContainer.find('.solution-signatures').delete()
+        }
+    }
+
+    if (signatures.includes(cookies.getUsername())) {
+        solutionContainer.addClass("voted-solution")
+        $('.propose-self-solution-container').hide();
+    }
 }
 
 /*
@@ -237,17 +286,60 @@ problems = [
     }
 ]
 */
+function getVotesText(votes) {
+    return "Votes: "+votes.join(", ")
+}
 function populateUserVotingPhase(problemsString) {
+    // TODO show voting phase and hide problems phase, then clear voting phase
+    $('#voting-phase-user').empty()
+    $('#voting-phase-user').show()
+    $('#problem-phase').hide()
     problems = JSON.parse(problemsString)
+    console.log(problems)
 
     problems.forEach( function(problem, index) {
-        problems["text"]
+        var problemContainer = $('<div/>', {
+            id: "voting-problem-"+index
+        })
+        // Add problem text
+        problemContainer.append($('<h2/>').text(problem["title"]))
+        problemContainer.append($('<p/>').text(problem["text"]))
 
-        problem["solutions"].forEach( function(solution, index) {
-            
+        problem["solutions"].forEach( function(solution, solutionIndex) {
+            var solutionContainer = $('<div/>', {
+                class: "solution",
+                id: "voting-problem-"+index+"-solution-"+solutionIndex,
+            })
+            solutionContainer.append($('<h2/>').text(solution["title"]))
+            solutionContainer.append($('<p/>').text(solution["text"]))
+            solutionContainer.append($('<p/>', {
+                class: "solution-votes"
+            }).text(getVotesText(solution["votes"])))
+
+            problemContainer.append(solutionsContainer)
         });
-    });
 
+        problemContainer.on('click' function() {
+            connection.toggleVote(index, solutionIndex)
+        })
+
+        $('#voting-phase-user').append(problemContainer)
+    });
+}
+
+function votedFor(problemNum, solutionNum, votes) {
+    signatures = JSON.parse(signatures)
+    let problemContainer = $('#voting-problem-'+problemNum)
+    let solutionContainer = problemContainer.find(".voting-problem-"+problemNum+"-solution-"+solutionNum)
+    
+    solutionContainer.find('.solution-votes').text(getVotesText(votes))
+
+    if (votes.includes(cookies.getUsername())) {
+        solutionContainer.addClass("voted-solution")
+    }
+    else {
+        solutionContainer.removeClass("voted-solution")
+    }
 }
 
 function solutionClick() {

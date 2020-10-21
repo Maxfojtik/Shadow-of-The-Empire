@@ -87,12 +87,16 @@ hr.partial-break {
 .voted-solution {
 	border: 1px solid gold;
 }
-
+.solution-signatures {
+	text-align: left;
+	margin-left: 20px;
+}
 .solution-votes {
 	text-align: left;
 	margin-left: 20px;
 }
 .proposed-solution-header-div {
 	display: grid;
-	grid-template-columns: 25% 50% 25%
+	grid-template-columns: 25% 50% 25%;
+	margin-bottom: -20px;
 }
