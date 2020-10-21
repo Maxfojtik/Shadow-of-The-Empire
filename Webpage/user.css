@@ -1,4 +1,11 @@
 
+#user-screen {
+	display: none;
+}
+#problem-phase {
+	display: none;
+}
+
 .tabs {
 	border: 1px solid black;
 	overflow: hidden;
