@@ -58,11 +58,11 @@ class BackendConnection {
 		}
 		if(params[0]=="SolutionProposed")
 		{
-			addProposedSolution(Integer.parseInt(params[1]), params[2], params[3], params[4]);//title, text
+			addProposedSolution(parseInt(params[1]), params[2], params[3], [], params[4]);//title, text
 		}
 		if(params[0]=="SignedFor")
 		{
-			signedFor(Integer.parseInt(params[1]), Integer.parseInt(params[2]), params[3])//problem number, solution number, names
+			signedFor(parseInt(params[1]), parseInt(params[2]), params[3])//problem number, solution number, names
 		}
 		if(params[0]=="PopulateUserVotingPhase")
 		{
