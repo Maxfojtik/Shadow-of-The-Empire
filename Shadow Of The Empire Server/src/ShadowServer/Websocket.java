@@ -4,7 +4,10 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -19,24 +22,48 @@ class Websockets extends WebSocketServer {
 	public Websockets() {
 		super(new InetSocketAddress(12398));
 	}
+	static HashMap<WebSocket, Player> playerConnections = new HashMap<>();
+	static WebSocket getByValue(Player valuePlayer)
+	{
+		Set<Entry<WebSocket, Player>> entrySet = playerConnections.entrySet();
+		WebSocket targetKey = null;
+		for(Entry<WebSocket, Player> entry : entrySet)
+		{
+			if(entry.getValue().equals(valuePlayer))
+			{
+				targetKey = entry.getKey();
+			}
+		}
+		return targetKey;
+	}
+	static void send(WebSocket conn, String toSend)
+	{
+		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress()+" <- "+toSend);
+		conn.send(toSend);
+	}
 	static void sendSliders(WebSocket conn)
 	{
-		conn.send("SliderValues|"+ShadowServer.theGame.theEmpire.wealth+"|"+ShadowServer.theGame.theEmpire.military+"|"+ShadowServer.theGame.theEmpire.consciousness+"|"+ShadowServer.theGame.theEmpire.culture+"|"+ShadowServer.theGame.theEmpire.piety); 
+		send(conn, "SliderValues|"+ShadowServer.theGame.theEmpire.wealth+"|"+ShadowServer.theGame.theEmpire.military+"|"+ShadowServer.theGame.theEmpire.consciousness+"|"+ShadowServer.theGame.theEmpire.culture+"|"+ShadowServer.theGame.theEmpire.piety); 
 	}
 	static void sendAccept(WebSocket conn, Player p)
 	{
-		conn.send("AcceptSessionID|"+p.sessionId+"|"+p.isAdmin+"|"+ShadowServer.theGame.problemPhase);
+		playerConnections.put(conn, p);
+		send(conn, "AcceptSessionID|"+p.sessionId+"|"+p.isAdmin+"|"+ShadowServer.theGame.problemPhase);
 		if(!p.isAdmin && ShadowServer.theGame.problemPhase)
 		{
 			sendProblems(conn, p);
 		}
 		if(!p.isAdmin && !ShadowServer.theGame.problemPhase)
 		{
-			sendPopulateUserVotingPhase(conn, p);
+			sendPopulateUserVotingPhase(conn);
 		}
 	}
-	
-	static void sendPopulateUserVotingPhase(WebSocket conn, Player p)
+	public void broadcast(String toSend)
+	{
+		System.out.println("SYSTEM <- "+toSend);
+		super.broadcast(toSend);
+	}
+	static void sendPopulateUserVotingPhase(WebSocket conn)
 	{
 		JSONArray json = new JSONArray();
 		for(int i = 0; i < ShadowServer.theGame.problems.size(); i++)
@@ -57,16 +84,17 @@ class Websockets extends WebSocketServer {
 					solJson.put("who", sol.playerSubmitted.username);
 				}
 				JSONArray peopleJson = new JSONArray();
-				for(int l = 0; l < sol.whoSignedOnMe.size(); l++)
+				for(int l = 0; l < sol.whoVotedOnMe.size(); l++)
 				{
-					peopleJson.put(sol.whoSignedOnMe.get(l).username);
+					peopleJson.put(sol.whoVotedOnMe.get(l).username);
 				}
-				solJson.put("signitures", peopleJson);
+				solJson.put("votes", peopleJson);
+				solutionsJson.put(solJson);
 			}
 			problemJson.put("solutions",solutionsJson);
 			json.put(problemJson);
 		}
-		conn.send("PopulateUserVotingPhase|"+json.toString());
+		send(conn, "PopulateUserVotingPhase|"+json.toString());
 	}
 	static void sendProblems(WebSocket conn, Player p)
 	{
@@ -111,18 +139,20 @@ class Websockets extends WebSocketServer {
 			problems.put(problemJson);
 		}
 		json.put("problems", problems);
-		conn.send("Problems|"+json.toString());
+		send(conn, "Problems|"+json.toString());
 	}
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
 		sendSliders(conn);
-		conn.send("UpdateState|InSliders"); //This method sends a message to the new client
+		send(conn, "UpdateState|InSliders"); //This method sends a message to the new client
 		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
 	}
 
 	@Override
 	public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " disconnected");
+		boolean removed = playerConnections.remove(conn) != null;
+		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " disconnected; "+(removed ? "Removed successfully " : " NOT REMOVED, DESYNC IMMINENT"));
+		
 	}
 
 	@Override
@@ -130,7 +160,7 @@ class Websockets extends WebSocketServer {
 	{
 		try
 		{
-			System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + ": " + message);
+			System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " -> " + message);
 			String[] params = message.split("\\|");
 			if(params[0].equals("SetSessionId"))
 			{
@@ -147,27 +177,27 @@ class Websockets extends WebSocketServer {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					conn.send("DenySessionID");
+					send(conn, "DenySessionID");
 				}
 			}
 			else if(params[0].equals("Signup"))
 			{
 				if(ShadowServer.doesPlayerExist(params[1]+"|"+params[2]))
 				{
-					conn.send("DenySignup|The username has already been taken");
+					send(conn, "DenySignup|The username has already been taken");
 				}
 				else if(!License.isValid(params[3]))
 				{
-					conn.send("DenySignup|The code you gave was WRONG!");
+					send(conn, "DenySignup|The code you gave was WRONG!");
 				}
 				else
 				{
 					Player p = new Player(params[1], params[2], License.isAdmin(params[3]));
-					System.out.println(params[1]+" created an account with "+params[2]+" as password and the code of "+params[3]);
+//					System.out.println(params[1]+" created an account with "+params[2]+" as password and the code of "+params[3]);
 					ShadowServer.theGame.players.put(p.sessionId, p);
 					License.usedCode(params[3]);
 					FileSystem.save();
-					conn.send("AcceptSignup");
+					send(conn, "AcceptSignup");
 					sendAccept(conn, p);
 				}
 			}
@@ -202,12 +232,21 @@ class Websockets extends WebSocketServer {
 					}
 					else
 					{
-						conn.send("Error|You dont exist or you're not admin.");
+						send(conn, "Error|You dont exist or you're not admin.");
+					}
+					Collection<WebSocket> sockets = getConnections();
+					for(WebSocket sock : sockets)
+					{
+						Player thePlayer = playerConnections.get(sock);
+						if(!thePlayer.isAdmin)
+						{
+							sendProblems(sock, thePlayer);
+						}
 					}
 					ShadowServer.theGame.problemPhase = true;
 					FileSystem.save();
 				}
-				catch(Exception e) {e.printStackTrace();conn.send("Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
+				catch(Exception e) {e.printStackTrace();send(conn, "Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
 			}
 			else if(params[0].equals("ChangeToVotingPhase"))
 			{
@@ -216,11 +255,29 @@ class Websockets extends WebSocketServer {
 				if(p!=null && p.isAdmin)
 				{
 					ShadowServer.theGame.problemPhase = false;
+					Collection<WebSocket> sockets = getConnections();
+					for(WebSocket sock : sockets)
+					{
+						Player thePlayer = playerConnections.get(sock);
+						if(!thePlayer.isAdmin)
+						{
+							sendPopulateUserVotingPhase(sock);
+						}
+					}
+					Collection<Player> players = ShadowServer.theGame.players.values();
+					for(Player thePlayer : players)
+					{
+						thePlayer.myVotes = new int[ShadowServer.theGame.problems.size()];
+						for(int i = 0; i < thePlayer.myVotes.length; i++)
+						{
+							thePlayer.myVotes[i] = -1;
+						}
+					}
 					FileSystem.save();
 				}
 				else
 				{
-					conn.send("Error|You dont exist or you're not admin.");
+					send(conn, "Error|You dont exist or you're not admin.");
 				}
 			}
 			else if(params[0].equals("SetSlider"))
@@ -261,16 +318,16 @@ class Websockets extends WebSocketServer {
 					}
 					else
 					{
-						conn.send("Error|You dont exist or you're not admin.");
+						send(conn, "Error|You dont exist or you're not admin.");
 					}
 				}
 				catch(NumberFormatException e)
 				{
-					conn.send("Error|Enter an integer please");
+					send(conn, "Error|Enter an integer please");
 				}
 				catch(Exception e)
 				{
-					conn.send("Error|"+e.toString());
+					send(conn, "Error|"+e.toString());
 				}
 			}
 	//		else if(params[0].equals("Problems"))
@@ -281,7 +338,7 @@ class Websockets extends WebSocketServer {
 			{
 				if(params.length!=6)
 				{
-					conn.send("Error|Please enter more information");
+					send(conn, "Error|Please enter more information");
 				}
 				else
 				{
@@ -307,6 +364,7 @@ class Websockets extends WebSocketServer {
 				String session = params[1]+"|"+params[2];
 				int problem = Integer.parseInt(params[3]);
 				int solution = Integer.parseInt(params[4]);
+				int theFakeSolution = solution;
 				Player p = ShadowServer.theGame.players.get(session);
 				if(!p.hasSubmittedSolution)
 				{
@@ -324,16 +382,16 @@ class Websockets extends WebSocketServer {
 						{
 							people.put(signedPlayer.username);
 						}
-						broadcast("SignedFor|"+problem+"|"+solution+"|"+people.toString());
+						broadcast("SignedFor|"+problem+"|"+theFakeSolution+"|"+people.toString());
 					}
 					else
 					{
-						conn.send("Error|You have already cast a signature");
+						send(conn, "Error|You have already cast a signature");
 					}
 				}
 				else
 				{
-					conn.send("Error|You can't sign on a solution if you submitted one, also stop cheating.");
+					send(conn, "Error|You can't sign on a solution if you submitted one, also stop cheating.");
 				}
 			}
 			else if(params[0].equals("Signnt"))
@@ -341,12 +399,21 @@ class Websockets extends WebSocketServer {
 				String session = params[1]+"|"+params[2];
 				int problem = Integer.parseInt(params[3]);
 				int solution = Integer.parseInt(params[4]);
+				int theFakeSolution = solution;
 				Player p = ShadowServer.theGame.players.get(session);
 				if(p.mySigniture!=null)
 				{
 					Problem theProblem = ShadowServer.theGame.problems.get(problem);
+					solution += theProblem.numberOfPremades();
 					Solution theSolution = theProblem.solutions.get(solution);
-					theSolution.whoSignedOnMe.remove(p);
+					if(theSolution.whoSignedOnMe.remove(p))
+					{
+						p.mySigniture = null;
+					}
+					else
+					{
+						send(conn, "Error|You can't Signnt on that solution because you signed on a different one.");
+					}
 					FileSystem.save();
 					
 					
@@ -355,15 +422,44 @@ class Websockets extends WebSocketServer {
 					{
 						people.put(signedPlayer.username);
 					}
-					broadcast("SignedFor|"+problem+"|"+solution+"|"+people.toString());
+					broadcast("SignedFor|"+problem+"|"+theFakeSolution+"|"+people.toString());
 				}
 				else
 				{
-					conn.send("Error|You can't Signnt because you haven't signed");
+					send(conn, "Error|You can't Signnt because you haven't signed");
 				}
 			}
+			else if(params[0].equals("ToggleVote"))
+			{
+				String session = params[1]+"|"+params[2];
+				int problem = Integer.parseInt(params[3]);
+				int solution = Integer.parseInt(params[4]);
+				Player p = ShadowServer.theGame.players.get(session);
+				Problem theProblem = ShadowServer.theGame.problems.get(problem);
+				if(p.myVotes[problem]!=-1)
+				{
+					Solution theSolution = theProblem.solutions.get(p.myVotes[problem]);
+					if(!theSolution.whoVotedOnMe.remove(p))
+					{
+						send(conn, "Error|There was a problem removing your old vote");
+					}
+				}
+				if(p.myVotes[problem] == solution)
+				{
+					p.myVotes[problem] = -1;
+				}
+				else
+				{
+					Solution theSolution = theProblem.solutions.get(solution);
+					theSolution.whoVotedOnMe.add(p);
+					p.myVotes[problem] = solution;
+				}
+				Solution theSolution = theProblem.solutions.get(solution);
+				JSONArray votedArray = new JSONArray(theSolution.whoVotedOnMe);
+				broadcast("VotedFor|"+problem+"|"+solution+"|"+votedArray.toString());
+			}
 		}
-		catch(Exception e) {e.printStackTrace();conn.send("Error|"+e.toString());}
+		catch(Exception e) {e.printStackTrace();send(conn, "Error|"+e.toString());}
 	}
 
 	@Override
