@@ -68,6 +68,10 @@ class BackendConnection {
 		{
 			populateUserVotingPhase(params[1]);
 		}
+		if(params[0]=="PopulateUserVotingPhase")
+		{
+			votedFor(parseInt(params[1]), parseInt(params[2]), params[3]);
+		}
 	}
 
 	onError(evt) {
@@ -118,5 +122,9 @@ class BackendConnection {
 	signntFor(problem, solutionNumber)
 	{
 		this.send("Signnt|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
+	}
+	toggleVote(problem, solutionNumber)
+	{
+		this.send("ToggleVote|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
 	}
 }
