@@ -68,7 +68,7 @@ class BackendConnection {
 		{
 			populateUserVotingPhase(params[1]);
 		}
-		if(params[0]=="PopulateUserVotingPhase")
+		if(params[0]=="VotedFor")
 		{
 			votedFor(parseInt(params[1]), parseInt(params[2]), params[3]);
 		}
