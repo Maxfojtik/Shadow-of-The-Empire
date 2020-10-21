@@ -61,7 +61,7 @@ class Websockets extends WebSocketServer {
 				{
 					peopleJson.put(sol.whoSignedOnMe.get(l).username);
 				}
-				solJson.put("votes", peopleJson);
+				solJson.put("signitures", peopleJson);
 			}
 			problemJson.put("solutions",solutionsJson);
 			json.put(problemJson);
@@ -72,7 +72,7 @@ class Websockets extends WebSocketServer {
 	{
 		JSONObject json = new JSONObject();
 		JSONArray problems = new JSONArray();
-		json.put("hasTakenAction", p.hasSubmittedSolution || p.mySigniture==null);
+		json.put("hasTakenAction", p.hasSubmittedSolution || p.mySigniture!=null);
 		for(int i = 0; i < ShadowServer.theGame.problems.size(); i++)
 		{
 			Problem problem = ShadowServer.theGame.problems.get(i);
@@ -90,12 +90,12 @@ class Websockets extends WebSocketServer {
 					solutionJson.put("text", s.text);
 					solutionJson.put("title", s.title);
 					solutionJson.put("who", s.playerSubmitted.username);
-					JSONArray solutionVotes = new JSONArray();
+					JSONArray solutionSignatures = new JSONArray();
 					for(int k = 0; k < s.whoSignedOnMe.size(); k++)
 					{
-						solutionVotes.put(s.whoSignedOnMe.get(k).username);
+						solutionSignatures.put(s.whoSignedOnMe.get(k).username);
 					}
-					solutionJson.put("votes", solutionVotes);
+					solutionJson.put("signatures", solutionSignatures);
 					proposedSolutions.put(solutionJson);
 				}
 				else
@@ -152,7 +152,7 @@ class Websockets extends WebSocketServer {
 			}
 			else if(params[0].equals("Signup"))
 			{
-				if(ShadowServer.doesPlayerExist(params[1]))
+				if(ShadowServer.doesPlayerExist(params[1]+"|"+params[2]))
 				{
 					conn.send("DenySignup|The username has already been taken");
 				}
@@ -294,7 +294,7 @@ class Websockets extends WebSocketServer {
 					{
 						Problem theProblem = ShadowServer.theGame.problems.get(problem);
 						Solution newSolution = new Solution(title, text, p);
-//						newSolution.whoVotedOnMe.add(p);
+//						newSolution.whoSigndOnMe.add(p);
 						theProblem.solutions.add(newSolution);
 						broadcast("SolutionProposed|"+problem+"|"+title+"|"+text+"|"+p.username);
 						p.hasSubmittedSolution = true;
@@ -313,20 +313,22 @@ class Websockets extends WebSocketServer {
 					if(p.mySigniture==null)
 					{
 						Problem theProblem = ShadowServer.theGame.problems.get(problem);
+						solution += theProblem.numberOfPremades();
 						Solution theSolution = theProblem.solutions.get(solution);
 						theSolution.whoSignedOnMe.add(p);
+						p.mySigniture = theSolution;
 						FileSystem.save();
 						
 						JSONArray people = new JSONArray();
-						for(Player votedPlayer : theSolution.whoSignedOnMe)
+						for(Player signedPlayer : theSolution.whoSignedOnMe)
 						{
-							people.put(votedPlayer);
+							people.put(signedPlayer.username);
 						}
 						broadcast("SignedFor|"+problem+"|"+solution+"|"+people.toString());
 					}
 					else
 					{
-						conn.send("Error|You have already cast a signiture");
+						conn.send("Error|You have already cast a signature");
 					}
 				}
 				else
@@ -349,9 +351,9 @@ class Websockets extends WebSocketServer {
 					
 					
 					JSONArray people = new JSONArray();
-					for(Player votedPlayer : theSolution.whoSignedOnMe)
+					for(Player signedPlayer : theSolution.whoSignedOnMe)
 					{
-						people.put(votedPlayer);
+						people.put(signedPlayer.username);
 					}
 					broadcast("SignedFor|"+problem+"|"+solution+"|"+people.toString());
 				}

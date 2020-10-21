@@ -36,4 +36,16 @@ public class Problem implements Serializable
 		text = tex;
 		title = titl;
 	}
+	int numberOfPremades()
+	{
+		int i = 0;
+		for(Solution solution : solutions)
+		{
+			if(solution.playerSubmitted==null)
+			{
+				i++;
+			}
+		}
+		return i;
+	}
 }
