@@ -224,7 +224,7 @@ class Websockets extends WebSocketServer {
 							for(int k = 0; k < solutionsJson.length(); k++)
 							{
 								JSONObject solutionJson = solutionsJson.getJSONObject(k);
-								Solution solution = new Solution(solutionJson.getString("text"), solutionJson.getString("title"), null);
+								Solution solution = new Solution(solutionJson.getString("title"), solutionJson.getString("text"), null);
 								problem.solutions.add(solution);
 							}
 							ShadowServer.theGame.problems.add(problem);

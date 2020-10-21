@@ -31,7 +31,7 @@ public class Problem implements Serializable
 	ArrayList<Solution> solutions = new ArrayList<>();
 	String text = "";
 	String title = "";
-	public Problem(String tex, String titl)
+	public Problem(String titl, String tex)
 	{
 		text = tex;
 		title = titl;
