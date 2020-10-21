@@ -136,7 +136,6 @@ function populateUserProblemsPhase(dataString) {
     dataJSON = JSON.parse(dataString)
     problems = dataJSON.problems
     hasTakenAction = dataJSON.hasTakenAction // Has submitted solution or signed
-    console.log("hasTakenAction: "+hasTakenAction)
     problems.forEach( function( problem, index ) {
         index++
         // Button for tab
@@ -316,10 +315,10 @@ function populateUserVotingPhase(problemsString) {
                 class: "solution-votes"
             }).text(getVotesText(solution["votes"])))
 
-            problemContainer.append(solutionsContainer)
+            problemContainer.append(solutionContainer)
         });
 
-        problemContainer.on('click' function() {
+        problemContainer.on('click', function() {
             connection.toggleVote(index, solutionIndex)
         })
 
@@ -328,7 +327,7 @@ function populateUserVotingPhase(problemsString) {
 }
 
 function votedFor(problemNum, solutionNum, votes) {
-    signatures = JSON.parse(signatures)
+    votes = JSON.parse(votes)
     let problemContainer = $('#voting-problem-'+problemNum)
     let solutionContainer = problemContainer.find(".voting-problem-"+problemNum+"-solution-"+solutionNum)
     
