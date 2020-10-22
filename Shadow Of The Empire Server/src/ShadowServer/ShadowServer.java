@@ -21,7 +21,8 @@ public class ShadowServer
 		Empire theEmpire = new Empire();
 		ArrayList<String> adminCodes = new ArrayList<>();
 		ArrayList<String> userCodes = new ArrayList<>();
-		public Game()
+		boolean acceptNewSignups = true;
+		public void newGame()
 		{
 			System.out.println("YOU ARE ABOUT TO GENERATE NEW GAME!!");
 			System.exit(1);
@@ -51,7 +52,8 @@ public class ShadowServer
 	}
 	public static void main(String args[]) throws InterruptedException
 	{
-//		ShadowServer.theGame = new Game();
+//		theGame = new Game();
+//		theGame.newGame();
 		try {
 			FileSystem.load();
 		} catch (ClassNotFoundException | IOException e) {

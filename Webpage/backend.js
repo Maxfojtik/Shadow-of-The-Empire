@@ -73,6 +73,14 @@ class BackendConnection {
 		{
 			votedFor(parseInt(params[1]), parseInt(params[2]), params[3]);
 		}
+		if(params[0]=="Message")
+		{
+			alert(params[1]);
+		}
+		if(params[0]=="SignupsDisabled")
+		{
+			signupsDisabled();
+		}
 	}
 
 	onError(evt) {
@@ -127,5 +135,9 @@ class BackendConnection {
 	toggleVote(problem, solutionNumber)
 	{
 		this.send("ToggleVote|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
+	}
+	lockSignups()
+	{
+		this.send("Lock|"+cookies.getSessionId());
 	}
 }
