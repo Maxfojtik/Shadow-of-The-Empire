@@ -5,6 +5,11 @@
 #problem-phase {
 	display: none;
 }
+#voting-phase-user {
+	display: none;
+	width: 80%;
+	margin: 0px auto;
+}
 
 .tabs {
 	border: 1px solid black;

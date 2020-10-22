@@ -12,13 +12,43 @@
   padding: 0px 9px;
 }
 
-/* The slider handle */
+/* The slider handle for chrome */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none; /* Override default look */
+  /*appearance: none;*/
+  width: 40px; /* Set a specific slider handle width */
+  height: 80px; /* Slider handle height */
+  background-image: url("Images/slider_thumb.png");
+}
+/* All the same stuff for Firefox */
+.slider::-moz-range-thumb {
+  -webkit-appearance: none; /* Override default look */
   appearance: none;
-  width: 20px; /* Set a specific slider handle width */
-  height: 30px; /* Slider handle height */
-  background: #000000;
+  width: 40px; /* Set a specific slider handle width */
+  height: 80px; /* Slider handle height */
+  background: none;
+  border: 0px;
+  background-image: url("Images/slider_thumb.png");
+}
+/* All the same stuff for IE */
+.slider::-ms-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 40px; /* Set a specific slider handle width */
+  height: 80px; /* Slider handle height */
+  background: none;
+  border: 0px;
+  background-image: url("Images/slider_thumb.png");
+}
+
+#sliders-screen img {
+  position: absolute;
+  margin-top: -23px;
+  margin-left: -8px;
+}
+#sliders-screen img:nth-of-type(2n) {
+  transform: scaleX(-1);
+  margin-left: -32px;
 }
 
 #wealth-slider {

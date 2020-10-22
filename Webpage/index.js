@@ -294,7 +294,6 @@ function populateUserVotingPhase(problemsString) {
     $('#voting-phase-user').show()
     $('#problem-phase').hide()
     problems = JSON.parse(problemsString)
-    console.log(problems)
 
     problems.forEach( function(problem, index) {
         var problemContainer = $('<div/>', {
@@ -315,12 +314,16 @@ function populateUserVotingPhase(problemsString) {
                 class: "solution-votes"
             }).text(getVotesText(solution["votes"])))
 
+            if (solution["votes"].includes(cookies.getUsername())) {
+                solutionContainer.addClass("voted-solution")
+            }
+
+            solutionContainer.on('click', function() {
+                connection.toggleVote(index, solutionIndex)
+            })
+
             problemContainer.append(solutionContainer)
         });
-
-        problemContainer.on('click', function() {
-            connection.toggleVote(index, solutionIndex)
-        })
 
         $('#voting-phase-user').append(problemContainer)
     });
@@ -329,7 +332,7 @@ function populateUserVotingPhase(problemsString) {
 function votedFor(problemNum, solutionNum, votes) {
     votes = JSON.parse(votes)
     let problemContainer = $('#voting-problem-'+problemNum)
-    let solutionContainer = problemContainer.find(".voting-problem-"+problemNum+"-solution-"+solutionNum)
+    let solutionContainer = problemContainer.find("#voting-problem-"+problemNum+"-solution-"+solutionNum)
     
     solutionContainer.find('.solution-votes').text(getVotesText(votes))
 
