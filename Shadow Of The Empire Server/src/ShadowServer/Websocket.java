@@ -455,7 +455,11 @@ class Websockets extends WebSocketServer {
 					p.myVotes[problem] = solution;
 				}
 				Solution theSolution = theProblem.solutions.get(solution);
-				JSONArray votedArray = new JSONArray(theSolution.whoVotedOnMe);
+				JSONArray votedArray = new JSONArray();
+				for(Player thePlayer : theSolution.whoVotedOnMe)
+				{
+					votedArray.put(thePlayer.username);
+				}
 				broadcast("VotedFor|"+problem+"|"+solution+"|"+votedArray.toString());
 			}
 		}
