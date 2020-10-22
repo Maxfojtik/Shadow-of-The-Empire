@@ -34,12 +34,16 @@ button {
 	font-size: 12px;
 	transition-duration: 0.4s;
 	border-radius: 4px;
+	cursor: pointer;
+}
+button:disabled {
+	cursor: default;
+	opacity: 60%;
 }
 
 button:hover {
 	background-color: #360000;
 	color: #eee;
-	cursor: pointer;
 }
 
 input {
