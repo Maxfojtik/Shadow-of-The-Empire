@@ -63,17 +63,20 @@
 	margin-top: 150px;
 	float: right;
 }
-
 #signed-in-as {
+	display: inline-block;
 	font-size: 25px;
 	margin-right: 10px;
-	bottom: 0;
+	margin-top: 5px;
+}
+#sign-out-button {
+	float: right;
 }
 
 .login-role-button-header {
 	margin-right: 30px;
 	margin-top: 30px;
-	float: right;
+	
 }
 
 .column {
