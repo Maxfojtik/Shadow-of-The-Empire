@@ -42,7 +42,7 @@ public class ThePast
 			{
 				myWriter.write(prob.title+"\n");
 				myWriter.write(prob.text+"\n");
-				for(int k = 0; k < prob.solutions.size(); i++)
+				for(int k = 0; k < prob.solutions.size(); k++)
 				{
 					Solution sol = prob.solutions.get(k);
 					myWriter.write("Solution "+i+"\n");
@@ -58,7 +58,14 @@ public class ThePast
 						myWriter.write("Votes: \n");
 						myWriter.write(sol.whoVotedOnMe+" ");
 					}
-					myWriter.write("Player Submitted: "+sol.playerSubmitted==null ? "false" : sol.playerSubmitted.username);
+					if(sol.playerSubmitted!=null)
+					{
+						myWriter.write("Player Submitted: "+sol.playerSubmitted.username+"\n");
+					}
+					else
+					{
+						myWriter.write("Player Submitted: false\n");
+					}
 				}
 			}
 		}
