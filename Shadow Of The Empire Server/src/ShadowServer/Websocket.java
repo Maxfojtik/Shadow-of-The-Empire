@@ -148,7 +148,10 @@ class Websockets extends WebSocketServer {
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
 		sendSliders(conn);
-		send(conn, "SignupsDisabled");
+		if(!ShadowServer.theGame.acceptNewSignups)
+		{
+			send(conn, "SignupsDisabled");
+		}
 		send(conn, "UpdateState|InSliders"); //This method sends a message to the new client
 		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
 	}
@@ -165,7 +168,9 @@ class Websockets extends WebSocketServer {
 	{
 		try
 		{
-			System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " -> " + message);
+			String messageStr = conn.getRemoteSocketAddress().getAddress().getHostAddress() + " -> " + message;
+			System.out.println(messageStr);
+			FileSystem.log(messageStr);
 			String[] params = message.split("\\|");
 			if(params[0].equals("SetSessionId"))
 			{
@@ -248,7 +253,6 @@ class Websockets extends WebSocketServer {
 					{
 						send(conn, "Error|You dont exist or you're not admin.");
 					}
-					
 					Collection<WebSocket> sockets = getConnections();
 					for(WebSocket sock : sockets)
 					{
@@ -260,6 +264,7 @@ class Websockets extends WebSocketServer {
 					}
 					ShadowServer.theGame.problemPhase = true;
 					FileSystem.save();
+					ThePast.save();
 				}
 				catch(Exception e) {e.printStackTrace();send(conn, "Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
 			}
@@ -314,6 +319,7 @@ class Websockets extends WebSocketServer {
 						}
 					}
 					FileSystem.save();
+					ThePast.save();
 				}
 				else
 				{

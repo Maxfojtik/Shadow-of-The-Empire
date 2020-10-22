@@ -24,11 +24,11 @@ public class ShadowServer
 		boolean acceptNewSignups = true;
 		public void newGame()
 		{
-//			System.out.println("YOU ARE ABOUT TO GENERATE NEW GAME!!");
-//			System.exit(1);
-//			License.regenerate(this);
-//			FileSystem.save(this);
-//			System.exit(0);
+			System.out.println("YOU ARE ABOUT TO GENERATE NEW GAME!!");
+			System.exit(1);
+			License.regenerate(this);
+			FileSystem.save(this);
+			System.exit(0);
 		}
 	}
 	static Game theGame;
@@ -52,7 +52,8 @@ public class ShadowServer
 	}
 	public static void main(String args[]) throws InterruptedException
 	{
-//		ShadowServer.theGame = new Game();
+//		theGame = new Game();
+//		theGame.newGame();
 		try {
 			FileSystem.load();
 		} catch (ClassNotFoundException | IOException e) {

@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -41,6 +42,14 @@ public class FileSystem
 			}
 			myWriter.close();
 			
+			myWriter = new FileWriter(saveLocation+"Players.txt");
+			myWriter.write("Username\tPassword\tisAdmin\n");
+			for(java.util.Map.Entry<String, Player> entry : ShadowServer.theGame.players.entrySet())
+			{
+				myWriter.write(entry.getValue().username+"\t"+entry.getValue().password+"\t\t"+entry.getValue().isAdmin+"\n");
+			}
+			myWriter.close();
+			
             System.out.println("Saved.");
  
         } catch (Exception ex) {
@@ -66,7 +75,7 @@ public class FileSystem
 		FileWriter myWriter;
 		try {
 			myWriter = new FileWriter(saveLocation+"rawLogs.txt", true);
-			myWriter.write(str);
+			myWriter.write(str+"\n");
 			myWriter.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
