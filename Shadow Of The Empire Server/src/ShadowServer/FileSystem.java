@@ -25,7 +25,7 @@ public class FileSystem
             objectOut.close();
             
             
-            FileWriter myWriter = new FileWriter("C:/Users/Maxwell/Dropbox/ShadowServer/AdminCodes.txt");
+            FileWriter myWriter = new FileWriter(saveLocation+"AdminCodes.txt");
 			for(String code : g.adminCodes)
 			{
 				myWriter.write(code+"\n");
@@ -34,13 +34,13 @@ public class FileSystem
 			
 			  
 			
-			myWriter = new FileWriter("C:/Users/Maxwell/Dropbox/ShadowServer/UserCodes.txt");
+			myWriter = new FileWriter(saveLocation+"UserCodes.txt");
 			for(String code : g.userCodes)
 			{
 				myWriter.write(code+"\n");
 			}
 			myWriter.close();
- 	      
+			
             System.out.println("Saved.");
  
         } catch (Exception ex) {
@@ -60,5 +60,17 @@ public class FileSystem
 		ShadowServer.theGame = (ShadowServer.Game) oi.readObject();
 		oi.close();
 		fi.close();
+	}
+	static void log(String str)
+	{
+		FileWriter myWriter;
+		try {
+			myWriter = new FileWriter(saveLocation+"rawLogs.txt", true);
+			myWriter.write(str);
+			myWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

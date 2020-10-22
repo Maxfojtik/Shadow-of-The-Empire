@@ -38,7 +38,9 @@ class Websockets extends WebSocketServer {
 	}
 	static void send(WebSocket conn, String toSend)
 	{
-		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress()+" <- "+toSend);
+		String str = conn.getRemoteSocketAddress().getAddress().getHostAddress()+" <- "+toSend;
+		System.out.println(str);
+		FileSystem.log(str);
 		conn.send(toSend);
 	}
 	static void sendSliders(WebSocket conn)
@@ -60,7 +62,9 @@ class Websockets extends WebSocketServer {
 	}
 	public void broadcast(String toSend)
 	{
-		System.out.println("SYSTEM <- "+toSend);
+		String str = "SYSTEM <- "+toSend;
+		System.out.println(str);
+		FileSystem.log(str);
 		super.broadcast(toSend);
 	}
 	static void sendPopulateUserVotingPhase(WebSocket conn)
@@ -144,6 +148,7 @@ class Websockets extends WebSocketServer {
 	@Override
 	public void onOpen(WebSocket conn, ClientHandshake handshake) {
 		sendSliders(conn);
+		send(conn, "SignupsDisabled");
 		send(conn, "UpdateState|InSliders"); //This method sends a message to the new client
 		System.out.println(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
 	}
@@ -189,6 +194,10 @@ class Websockets extends WebSocketServer {
 				else if(!License.isValid(params[3]))
 				{
 					send(conn, "DenySignup|The code you gave was WRONG!");
+				}
+				else if(!ShadowServer.theGame.acceptNewSignups)
+				{
+					send(conn, "DenySignup|Sadly the signups have been locked because the game has started");
 				}
 				else
 				{
@@ -309,6 +318,17 @@ class Websockets extends WebSocketServer {
 				else
 				{
 					send(conn, "Error|You dont exist or you're not admin.");
+				}
+			}
+			else if(params[0].equals("Lock"))
+			{
+				String session = params[1]+"|"+params[2];
+				Player p = ShadowServer.theGame.players.get(session);
+				if(p!=null && p.isAdmin)
+				{
+					ShadowServer.theGame.acceptNewSignups = false;
+					broadcast("SignupsDisabled");
+					send(conn, "Message|Signups locked successfully. There are "+ShadowServer.theGame.players.size()+" players signed up. Let the game begin!");
 				}
 			}
 			else if(params[0].equals("SetSlider"))

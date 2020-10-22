@@ -72,6 +72,14 @@ class BackendConnection {
 		{
 			votedFor(parseInt(params[1]), parseInt(params[2]), params[3]);
 		}
+		if(params[0]=="Message")
+		{
+			alert(params[1]);
+		}
+		if(params[0]=="SignupsDisabled")
+		{
+			signupsDisabled();
+		}
 	}
 
 	onError(evt) {

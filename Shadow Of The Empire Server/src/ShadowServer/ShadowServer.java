@@ -21,13 +21,14 @@ public class ShadowServer
 		Empire theEmpire = new Empire();
 		ArrayList<String> adminCodes = new ArrayList<>();
 		ArrayList<String> userCodes = new ArrayList<>();
-		public Game()
+		boolean acceptNewSignups = true;
+		public void newGame()
 		{
-			System.out.println("YOU ARE ABOUT TO GENERATE NEW GAME!!");
-			System.exit(1);
-			License.regenerate(this);
-			FileSystem.save(this);
-			System.exit(0);
+//			System.out.println("YOU ARE ABOUT TO GENERATE NEW GAME!!");
+//			System.exit(1);
+//			License.regenerate(this);
+//			FileSystem.save(this);
+//			System.exit(0);
 		}
 	}
 	static Game theGame;
