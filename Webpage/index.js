@@ -50,8 +50,8 @@ function acceptSignIn(username, password, isAdmin, isInProblemPhase) {
 
 // Called by backend upon connection if signups are disabled
 function signupsDisabled() {
-    $('#sign-up-button').hide();
-    $('#lock-sign-up-button').hide();
+    $('#sign-up-button').disable();
+    $('#lock-signups-button').hide();
 }
 
 // Called by backend
