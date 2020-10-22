@@ -140,7 +140,10 @@ function changeToVotingPhase() {
 function populateUserProblemsPhase(dataString) {
     $('#voting-phase-user').hide()
     $('#problem-phase').show()
-    // TODO show problems phase and hide voting phase, then clear problems phase
+
+    $('#tab-button-holder').empty()
+    $('#tabs-content-holder').empty()
+    
     dataJSON = JSON.parse(dataString)
     problems = dataJSON.problems
     hasTakenAction = dataJSON.hasTakenAction // Has submitted solution or signed
@@ -297,7 +300,6 @@ function getVotesText(votes) {
     return "Votes: "+votes.join(", ")
 }
 function populateUserVotingPhase(problemsString) {
-    // TODO show voting phase and hide problems phase, then clear voting phase
     $('#voting-phase-user').empty()
     $('#voting-phase-user').show()
     $('#problem-phase').hide()
