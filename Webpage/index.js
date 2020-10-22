@@ -57,7 +57,7 @@ function sendSignUp() {
     var password = $("#password-input").val()
 
     if (password.length == 4 && username.length >= 4 && (username+""+password).indexOf("|") === -1) {
-        var accountCode = prompt("Confirm sign up.\nUsername: "+username+"\nPassword: "+password+".\nBe aware this site is not secure, do not reuse passwords.\n\nEnter your account code:")
+        var accountCode = prompt("Confirm sign up.\nName: "+username+"\nPassword: "+password+".\nBe aware this site is not secure, do not reuse passwords.\n\nEnter your account code:")
         accountCode = accountCode.toUpperCase()
         connection.sendSignUp(username+"|"+password+"|"+accountCode);
     }
