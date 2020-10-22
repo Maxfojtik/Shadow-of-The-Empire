@@ -127,4 +127,8 @@ class BackendConnection {
 	{
 		this.send("ToggleVote|"+cookies.getSessionId()+"|"+problem+"|"+solutionNumber);
 	}
+	lockSignups()
+	{
+		this.send("Lock|"+cookies.getSessionId());
+	}
 }

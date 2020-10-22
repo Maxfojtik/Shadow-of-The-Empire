@@ -193,6 +193,11 @@ class Websockets extends WebSocketServer {
 				else
 				{
 					Player p = new Player(params[1], params[2], License.isAdmin(params[3]));
+//					p.myVotes = new int[ShadowServer.theGame.problems.size()];
+//					for(int i = 0; i < p.myVotes.length; i++)
+//					{
+//						p.myVotes[i] = -1;
+//					}
 //					System.out.println(params[1]+" created an account with "+params[2]+" as password and the code of "+params[3]);
 					ShadowServer.theGame.players.put(p.sessionId, p);
 					License.usedCode(params[3]);
@@ -234,6 +239,7 @@ class Websockets extends WebSocketServer {
 					{
 						send(conn, "Error|You dont exist or you're not admin.");
 					}
+					
 					Collection<WebSocket> sockets = getConnections();
 					for(WebSocket sock : sockets)
 					{
@@ -255,11 +261,34 @@ class Websockets extends WebSocketServer {
 				if(p!=null && p.isAdmin)
 				{
 					ShadowServer.theGame.problemPhase = false;
+					
+					
+					for(Problem problem : ShadowServer.theGame.problems)
+					{
+						Solution theBestSolution = problem.solutions.get(0);
+						for(Solution solution : problem.solutions)
+						{
+							if(solution.whoSignedOnMe.size()>theBestSolution.whoSignedOnMe.size())
+							{
+								theBestSolution = solution;
+							}
+						}
+						ArrayList<Solution> badSolutions = new ArrayList<Solution>();
+						for(Solution solution : problem.solutions)
+						{
+							if(!solution.equals(theBestSolution) && solution.playerSubmitted!=null)
+							{
+								badSolutions.add(solution);
+							}
+						}
+						problem.solutions.removeAll(badSolutions);
+					}
+					
 					Collection<WebSocket> sockets = getConnections();
 					for(WebSocket sock : sockets)
 					{
 						Player thePlayer = playerConnections.get(sock);
-						if(!thePlayer.isAdmin)
+						if(thePlayer!=null && !thePlayer.isAdmin)
 						{
 							sendPopulateUserVotingPhase(sock);
 						}
@@ -268,6 +297,8 @@ class Websockets extends WebSocketServer {
 					for(Player thePlayer : players)
 					{
 						thePlayer.myVotes = new int[ShadowServer.theGame.problems.size()];
+						thePlayer.hasSubmittedSolution = false;
+						thePlayer.mySigniture = null;
 						for(int i = 0; i < thePlayer.myVotes.length; i++)
 						{
 							thePlayer.myVotes[i] = -1;
@@ -435,32 +466,48 @@ class Websockets extends WebSocketServer {
 				int problem = Integer.parseInt(params[3]);
 				int solution = Integer.parseInt(params[4]);
 				Player p = ShadowServer.theGame.players.get(session);
-				Problem theProblem = ShadowServer.theGame.problems.get(problem);
-				if(p.myVotes[problem]!=-1)
+				if(p!=null)
 				{
-					Solution theSolution = theProblem.solutions.get(p.myVotes[problem]);
-					if(!theSolution.whoVotedOnMe.remove(p))
+					Problem theProblem = ShadowServer.theGame.problems.get(problem);
+					if(p.myVotes[problem]!=-1)
 					{
-						send(conn, "Error|There was a problem removing your old vote");
+						Solution theSolution = theProblem.solutions.get(p.myVotes[problem]);
+						if(!theSolution.whoVotedOnMe.remove(p))
+						{
+							send(conn, "Error|There was a problem removing your old vote");
+						}
+						else
+						{
+							JSONArray votedArray = new JSONArray();
+							for(Player thePlayer : theSolution.whoVotedOnMe)
+							{
+								votedArray.put(thePlayer.username);
+							}
+							broadcast("VotedFor|"+problem+"|"+p.myVotes[problem]+"|"+votedArray.toString());
+						}
 					}
-				}
-				if(p.myVotes[problem] == solution)
-				{
-					p.myVotes[problem] = -1;
+					if(p.myVotes[problem] == solution)
+					{
+						p.myVotes[problem] = -1;
+					}
+					else
+					{
+						Solution theSolution = theProblem.solutions.get(solution);
+						theSolution.whoVotedOnMe.add(p);
+						p.myVotes[problem] = solution;
+					}
+					Solution theSolution = theProblem.solutions.get(solution);
+					JSONArray votedArray = new JSONArray();
+					for(Player thePlayer : theSolution.whoVotedOnMe)
+					{
+						votedArray.put(thePlayer.username);
+					}
+					broadcast("VotedFor|"+problem+"|"+solution+"|"+votedArray.toString());
 				}
 				else
 				{
-					Solution theSolution = theProblem.solutions.get(solution);
-					theSolution.whoVotedOnMe.add(p);
-					p.myVotes[problem] = solution;
+					send(conn, "Error|You dont exist and this catch is here to push the game forward");
 				}
-				Solution theSolution = theProblem.solutions.get(solution);
-				JSONArray votedArray = new JSONArray();
-				for(Player thePlayer : theSolution.whoVotedOnMe)
-				{
-					votedArray.put(thePlayer.username);
-				}
-				broadcast("VotedFor|"+problem+"|"+solution+"|"+votedArray.toString());
 			}
 		}
 		catch(Exception e) {e.printStackTrace();send(conn, "Error|"+e.toString());}
