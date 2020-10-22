@@ -21,7 +21,7 @@ public class Problem implements Serializable
 		Player playerSubmitted = null;
 		ArrayList<Player> whoSignedOnMe = new ArrayList<>();
 		ArrayList<Player> whoVotedOnMe = new ArrayList<>();
-		public Solution(String tex, String titl, Player player)
+		public Solution(String titl, String tex, Player player)
 		{
 			text = tex;
 			title = titl;
@@ -31,7 +31,7 @@ public class Problem implements Serializable
 	ArrayList<Solution> solutions = new ArrayList<>();
 	String text = "";
 	String title = "";
-	public Problem(String tex, String titl)
+	public Problem(String titl, String tex)
 	{
 		text = tex;
 		title = titl;
