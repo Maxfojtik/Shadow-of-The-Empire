@@ -14,6 +14,7 @@ console.log("Hmmm." +
 function setSliderValues(values) {
     for (const [slider, value] of Object.entries(values)) {
         $("#"+slider.toLowerCase()+"-slider").val(value);
+        $("#"+slider.toLowerCase()+"-slider-title").text(slider+": "+value)
     }
 }
 
@@ -46,6 +47,13 @@ function acceptSignIn(username, password, isAdmin, isInProblemPhase) {
         $('#problem-phase').hide();
     }
 }
+
+// Called by backend upon connection if signups are disabled
+function signupsDisabled() {
+    $('#sign-up-button').hide();
+    $('#lock-sign-up-button').hide();
+}
+
 // Called by backend
 function denySignIn() { // TODO
     alert("Your username is incorrect for that password.");
@@ -63,7 +71,7 @@ function sendSignUp() {
     }
     else {
         if ((username+""+password).indexOf("|") === -1) {
-            alert("Username must be 4 digits or longer.\nPassword must be exactly 4 digits.\nDo not reuse passwords for this site, it is not secure.")
+            alert("Name must be 4 characters or longer.\nPassword must be exactly 4 digits.\nDo not reuse passwords for this site, it is not secure.")
         }
         else {
             alert("Username must be 4 digits or longer.\nPassword must be exactly 4 digits.\nUsername and password may not contain the '|' character.\nDo not reuse passwords for this site, it is not secure.")

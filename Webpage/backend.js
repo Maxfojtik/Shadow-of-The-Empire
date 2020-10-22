@@ -23,6 +23,7 @@ class BackendConnection {
 
 	onClose(evt) {
 		console.log("DISCONNECTED");
+    	location.reload();
 	}
 
 	onMessage(evt) {
