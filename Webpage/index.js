@@ -192,6 +192,7 @@ function populateUserProblemsPhase(dataString) {
             $('.propose-self-solution-container').hide()
         }
         else {
+            $('.propose-self-solution-container').show()
             problemContent.find('.propose-self-solution-container').find("button").on("click", function() {
                 if (confirm('Are you sure you would like to propose this solution?' +
                     '\nThis consumes your vote/propose action and cannot be undone')) {
