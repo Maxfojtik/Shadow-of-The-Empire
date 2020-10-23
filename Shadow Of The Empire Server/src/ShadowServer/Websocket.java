@@ -228,11 +228,12 @@ class Websockets extends WebSocketServer {
 			{
 				try
 				{
-					ShadowServer.theGame.problems.clear();
 					String session = params[1]+"|"+params[2];
 					Player p = ShadowServer.theGame.players.get(session);
 					if(p!=null && p.isAdmin)
 					{
+						ThePast.save();
+						ShadowServer.theGame.problems.clear();
 						String jsonRaw = params[3];
 						JSONArray problemsJson = new JSONArray(jsonRaw);
 						for(int i = 0; i < problemsJson.length(); i++)
@@ -257,14 +258,16 @@ class Websockets extends WebSocketServer {
 					for(WebSocket sock : sockets)
 					{
 						Player thePlayer = playerConnections.get(sock);
-						if(!thePlayer.isAdmin)
+						if(thePlayer!=null)
 						{
-							sendProblems(sock, thePlayer);
+							if(!thePlayer.isAdmin)
+							{
+								sendProblems(sock, thePlayer);
+							}
 						}
 					}
 					ShadowServer.theGame.problemPhase = true;
 					FileSystem.save();
-					ThePast.save();
 				}
 				catch(Exception e) {e.printStackTrace();send(conn, "Error|Something went wrong in the JSON parse: "+e.getCause()+" "+e.getMessage());}
 			}
@@ -274,39 +277,34 @@ class Websockets extends WebSocketServer {
 				Player p = ShadowServer.theGame.players.get(session);
 				if(p!=null && p.isAdmin)
 				{
+					ThePast.save();
 					ShadowServer.theGame.problemPhase = false;
 					
 					
 					for(Problem problem : ShadowServer.theGame.problems)
 					{
-						Solution theBestSolution = problem.solutions.get(0);
-						for(Solution solution : problem.solutions)
+						if(problem.solutions.size()>problem.numberOfPremades())
 						{
-							if(solution.whoSignedOnMe.size()>theBestSolution.whoSignedOnMe.size())
+							Solution theBestSolution = problem.solutions.get(problem.numberOfPremades());
+							for(Solution solution : problem.solutions)
 							{
-								theBestSolution = solution;
+								if(solution.whoSignedOnMe.size()>theBestSolution.whoSignedOnMe.size())
+								{
+									theBestSolution = solution;
+								}
 							}
-						}
-						ArrayList<Solution> badSolutions = new ArrayList<Solution>();
-						for(Solution solution : problem.solutions)
-						{
-							if(!solution.equals(theBestSolution) && solution.playerSubmitted!=null)
+							ArrayList<Solution> badSolutions = new ArrayList<Solution>();
+							for(Solution solution : problem.solutions)
 							{
-								badSolutions.add(solution);
+								if(!solution.equals(theBestSolution) && solution.playerSubmitted!=null)
+								{
+									badSolutions.add(solution);
+								}
 							}
-						}
-						problem.solutions.removeAll(badSolutions);
-					}
-					
-					Collection<WebSocket> sockets = getConnections();
-					for(WebSocket sock : sockets)
-					{
-						Player thePlayer = playerConnections.get(sock);
-						if(thePlayer!=null && !thePlayer.isAdmin)
-						{
-							sendPopulateUserVotingPhase(sock);
+							problem.solutions.removeAll(badSolutions);
 						}
 					}
+
 					Collection<Player> players = ShadowServer.theGame.players.values();
 					for(Player thePlayer : players)
 					{
@@ -318,8 +316,16 @@ class Websockets extends WebSocketServer {
 							thePlayer.myVotes[i] = -1;
 						}
 					}
+					Collection<WebSocket> sockets = getConnections();
+					for(WebSocket sock : sockets)
+					{
+						Player thePlayer = playerConnections.get(sock);
+						if(thePlayer!=null && !thePlayer.isAdmin)
+						{
+							sendPopulateUserVotingPhase(sock);
+						}
+					}
 					FileSystem.save();
-					ThePast.save();
 				}
 				else
 				{

@@ -6,57 +6,82 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+
+import org.json.JSONArray;
 
 import ShadowServer.Problem.Solution;
 import ShadowServer.ShadowServer.Empire;
 
 public class ThePast 
 {
-	static class Phase
+	static class Phase implements Serializable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		ArrayList<Problem> phaseProblems;
 		Empire gameAtPhase;
-		boolean problemsPhase = false;
+		Boolean problemsPhase = false;
 		@SuppressWarnings("unchecked")
-		public Phase(ArrayList<Problem> ps, Empire g, boolean pp)
+		public Phase(ArrayList<Problem> ps, Empire g, Boolean pp)
 		{
 			phaseProblems = (ArrayList<Problem>) copy(ps);
 			gameAtPhase = (Empire) copy(g);
-			problemsPhase = (boolean) copy(pp);
+			problemsPhase = (Boolean) copy(pp);
 		}
 	}
-	static ArrayList<Phase> allPhases = new ArrayList<>();
+	
 	static void save() throws IOException
 	{
 		Phase pastPhase = new Phase(ShadowServer.theGame.problems, ShadowServer.theGame.theEmpire, ShadowServer.theGame.problemPhase);
-		allPhases.add(pastPhase);
+		System.out.println(pastPhase.problemsPhase);
+		if(ShadowServer.theGame.allPhases==null)
+		{
+			ShadowServer.theGame.allPhases = new ArrayList<Phase>();
+		}
+		ShadowServer.theGame.allPhases.add(pastPhase);
 		
 		FileWriter myWriter = new FileWriter(FileSystem.saveLocation+"The Past.txt");
-		for(int i = 0; i < allPhases.size(); i++)
+		for(int i = 0; i < ShadowServer.theGame.allPhases.size(); i++)
 		{
-			Phase p = allPhases.get(i);
-			myWriter.write(i/2+" " + (p.problemsPhase ? " Problems Phase\n" : " Voting Phase\n"));
+			Phase p = ShadowServer.theGame.allPhases.get(i);
+			myWriter.write("\n\n");
+			myWriter.write( (p.problemsPhase ? "End of Problems Phase " : "End of Voting Phase ")+i/2+":\n");
 			myWriter.write("Game state at phase: Wealth: "+p.gameAtPhase.wealth+" Military: "+p.gameAtPhase.military+" Consciousness: "+p.gameAtPhase.consciousness+" Culture: "+p.gameAtPhase.culture+" Piety: "+p.gameAtPhase.piety+"\n");
-			for(Problem prob : p.phaseProblems)
+			for(int o = 0; o < p.phaseProblems.size(); o++)
 			{
+				Problem prob = p.phaseProblems.get(o);
+				myWriter.write("Problem "+(o+1)+"\n");
 				myWriter.write(prob.title+"\n");
 				myWriter.write(prob.text+"\n");
 				for(int k = 0; k < prob.solutions.size(); k++)
 				{
 					Solution sol = prob.solutions.get(k);
-					myWriter.write("Solution "+i+"\n");
+					myWriter.write("Solution "+(k+1)+"\n");
 					myWriter.write(sol.title+"\n");
 					myWriter.write(sol.text+"\n");
 					if(p.problemsPhase)
 					{
 						myWriter.write("Signitures: \n");
-						myWriter.write(sol.whoSignedOnMe+" ");
+						JSONArray arr = new JSONArray();
+						for(Player signedPlayer : sol.whoSignedOnMe)
+						{
+							arr.put(signedPlayer.username);
+						}
+						myWriter.write(arr+" \n");
 					}
 					else
 					{
 						myWriter.write("Votes: \n");
-						myWriter.write(sol.whoVotedOnMe+" ");
+						JSONArray arr = new JSONArray();
+						for(Player signedPlayer : sol.whoVotedOnMe)
+						{
+							arr.put(signedPlayer.username);
+						}
+						myWriter.write(arr+" \n");
 					}
 					if(sol.playerSubmitted!=null)
 					{
@@ -71,6 +96,7 @@ public class ThePast
 		}
 		myWriter.flush();
 		myWriter.close();
+		System.out.println("Logged.");
 	}
 	public static Object copy(Object orig) {
         Object obj = null;

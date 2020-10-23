@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import ShadowServer.ShadowServer.Game;
+import ShadowServer.ThePast.Phase;
 
 public class ShadowServer 
 {
@@ -22,6 +23,7 @@ public class ShadowServer
 		ArrayList<String> adminCodes = new ArrayList<>();
 		ArrayList<String> userCodes = new ArrayList<>();
 		boolean acceptNewSignups = true;
+		ArrayList<Phase> allPhases = new ArrayList<>();
 		public void newGame()
 		{
 			System.out.println("YOU ARE ABOUT TO GENERATE NEW GAME!!");
